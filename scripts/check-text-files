@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+python3 <<'PY'
+from pathlib import Path
+import subprocess
+import sys
+
+tracked = subprocess.check_output(["git", "ls-files", "-z"]).split(b"\0")
+errors = []
+
+for raw in tracked:
+    if not raw:
+        continue
+    path = Path(raw.decode())
+    if not path.is_file():
+        continue
+    data = path.read_bytes()
+    if b"\0" in data:
+        continue
+    if data and not data.endswith(b"\n"):
+        errors.append(f"{path}: text file does not end with a newline")
+    if data.endswith(b"\n\n"):
+        errors.append(f"{path}: text file ends with more than one newline")
+    if b"\r\n" in data:
+        errors.append(f"{path}: CRLF line endings are not allowed")
+
+if errors:
+    print("\n".join(errors), file=sys.stderr)
+    raise SystemExit(1)
+
+print("text-file policy passed")
+PY

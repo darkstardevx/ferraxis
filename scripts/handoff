@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+next="${*:-Review PROJECT_STATE.md and the active implementation plan.}"
+
+active_plan="none"
+active_milestone="none"
+if [[ -f .plans/ACTIVE ]]; then
+  active_plan="$(tr -d '\r\n' < .plans/ACTIVE)"
+  if [[ -f "$active_plan" ]]; then
+    active_milestone="$(grep '^Milestone:' "$active_plan" | head -n1 | sed 's/^Milestone:[[:space:]]*//')"
+  fi
+fi
+
+tree_state="dirty"
+[[ -n "$(git status --porcelain)" ]] || tree_state="clean"
+
+cat > AGENT_HANDOFF.md <<EOF
+# Ferraxis Agent Handoff
+
+## Repository state
+
+- Branch: `$(git branch --show-current)`
+- HEAD: `$(git rev-parse HEAD)`
+- Working tree: $tree_state
+- Active milestone: $active_milestone
+- Active plan: `$active_plan`
+
+## Resume checklist
+
+1. Read `PROJECT_SPEC.md`.
+2. Read `PROJECT_STATE.md`.
+3. Read `AGENTS.md`.
+4. Run `./scripts/project-status`.
+5. Read the active plan, relevant ADRs, invariants, and semantic evidence.
+6. Do not implement Rust unless the active plan is Approved and committed in `HEAD`.
+
+## Next exact action
+
+$next
+
+## Validation rule
+
+Run `./scripts/gate.sh full` before claiming local completion. Record the exact successful GitHub
+Actions run in the plan before closing the milestone.
+EOF
+
+echo "Updated AGENT_HANDOFF.md"

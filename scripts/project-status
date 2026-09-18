@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+tree_state="dirty"
+[[ -n "$(git status --porcelain)" ]] || tree_state="clean"
+
+echo "Ferraxis repository status"
+echo "=========================="
+printf 'Branch:       %s\n' "$(git branch --show-current)"
+printf 'HEAD:         %s\n' "$(git rev-parse HEAD)"
+printf 'Tree:         %s\n' "$tree_state"
+printf 'rustc:        %s\n' "$(rustc --version)"
+printf 'cargo:        %s\n' "$(cargo --version)"
+echo
+./scripts/plan status
+echo
+echo "Active milestones:"
+grep -E '^\| P[0-9]+-M[0-9]{3} \| active \|' docs/MILESTONES.md || echo "  none"
+echo
+echo "Latest commit:"
+git log -1 --format='  %h %s'
