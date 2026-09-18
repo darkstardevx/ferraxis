@@ -1,0 +1,24 @@
+[workspace]
+members = [
+    "crates/ferraxis",
+    "crates/ferraxis-diagnostics",
+    "crates/ferraxis-lexer",
+    "crates/ferraxis-source",
+    "crates/ferraxis-span",
+    "tools/xtask",
+]
+resolver = "2"
+
+[workspace.package]
+edition = "2024"
+rust-version = "1.85"
+version = "0.0.3"
+authors = ["Ferraxis contributors"]
+repository = "https://github.com/darkstardevx/ferraxis"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[workspace.lints.clippy]
+all = "warn"

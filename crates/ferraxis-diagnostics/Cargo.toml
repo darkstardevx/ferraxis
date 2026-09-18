@@ -1,0 +1,12 @@
+[package]
+name = "ferraxis-diagnostics"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+ferraxis-span = { path = "../ferraxis-span" }
+
+[lints]
+workspace = true

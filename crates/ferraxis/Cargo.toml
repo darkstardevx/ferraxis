@@ -1,0 +1,13 @@
+[package]
+name = "ferraxis"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+
+[dependencies]
+ferraxis-lexer = { path = "../ferraxis-lexer" }
+ferraxis-source = { path = "../ferraxis-source" }
+
+[lints]
+workspace = true

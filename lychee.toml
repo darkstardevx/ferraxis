@@ -1,0 +1,9 @@
+max_retries = 3
+retry_wait_time = 2
+accept = [200, 204, 206, 429]
+exclude = [
+  "http://localhost",
+  "http://127.0.0.1",
+]
+include_mail = false
+no_progress = true
