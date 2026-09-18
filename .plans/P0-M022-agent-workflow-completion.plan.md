@@ -152,7 +152,7 @@ repository rules.
 ## Completion record
 
 Implementation commit: 93397095be100be722e4bf48c0fc00a159f143b8
-CI run: https://github.com/darkstardevx/ferraxis/actions/runs/35406400983
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
 CI result: success
 Completed: 2026-09-18
 Notes: CI exposed and verified two workflow-hardening corrections before closure: canonical rustfmt layout in xtask and shell-safe Markdown handoff generation. Final validation passed stable code, feature isolation, Rust 1.85.0 MSRV, repository workflow/ShellCheck, and documentation/link jobs.
