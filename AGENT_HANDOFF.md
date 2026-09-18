@@ -6,7 +6,7 @@
 - Active milestone: none
 - Active plan: none
 - Next compiler milestone: `P0-M018`
-- Verified P0-M022 implementation CI: https://github.com/darkstardevx/ferraxis/actions/runs/35406400983
+- Verified P0-M022 implementation CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
 
 ## Resume checklist
 
