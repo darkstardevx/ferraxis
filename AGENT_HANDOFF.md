@@ -2,10 +2,11 @@
 
 ## Repository state
 
-- Active milestone: `P0-M022`
-- Active plan: `.plans/P0-M022-agent-workflow-completion.plan.md`
-- Expected plan status: `Approved`
-- Next compiler milestone after closure: `P0-M018`
+- Completed milestone: `P0-M022`
+- Active milestone: none
+- Active plan: none
+- Next compiler milestone: `P0-M018`
+- Verified P0-M022 implementation CI: https://github.com/darkstardevx/ferraxis/actions/runs/35406400983
 
 ## Resume checklist
 
@@ -13,22 +14,30 @@
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Read `.plans/ACTIVE` and the active plan.
-6. Read relevant ADRs, invariants, and semantic evidence before changing implementation.
-7. Never begin Rust implementation from a Draft or uncommitted plan.
+5. Confirm there is no stale `.plans/ACTIVE`.
+6. Read ADR-0006 before differential-testing work.
+7. Create the P0-M018 plan before changing Rust implementation.
 8. Never bypass repository hooks.
 
-## Current work
+## Completed work
 
-Complete the P0-M022 agent-workflow infrastructure and obtain an exact green CI run for the
-implementation commit.
+P0-M022 made Ferraxis compiler-governance complete and agent-workflow complete. The final verified
+implementation head passed stable code, feature-isolation, MSRV 1.85.0, repository workflow, and
+documentation gates.
 
 ## Next exact action
 
-Run the full local gate, commit the workflow implementation, push the exact commit, run
-`./scripts/ci-watch`, then close P0-M022 with `./scripts/plan close --ci-run <URL>`.
+After PR #1 merges and `main` CI is green, create a dedicated P0-M018 branch and run:
+
+```bash
+./scripts/plan new P0-M018 rustc-differential-lexer
+```
+
+Fill the plan with the differential-evidence contract, corpus boundary, version capture, result
+classification, failure modes, and tests. Approve and commit that plan before implementing the
+harness.
 
 ## Validation rule
 
-Do not claim completion based only on local success. Exact GitHub Actions evidence belongs in the
-completed plan.
+Do not claim P0-M018 progress from prototype code alone. Differential observations must be
+reproducible, versioned, and interpreted through Ferraxis's semantic-authority hierarchy.

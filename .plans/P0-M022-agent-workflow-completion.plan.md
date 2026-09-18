@@ -1,6 +1,6 @@
 # Plan: P0-M022 — Agent workflow completion
 
-Status: Approved
+Status: Complete
 Milestone: P0-M022
 Created: 2026-09-18
 
@@ -138,21 +138,21 @@ repository rules.
 
 ## Acceptance criteria
 
-- [ ] Plan-first workflow is repository-enforced.
-- [ ] Hooks are repository-owned and installable per clone.
-- [ ] Tiered local gates exist.
-- [ ] Stable, MSRV, all-feature, and no-default-feature paths are tested.
-- [ ] Documentation remains a hard gate.
-- [ ] Project state and agent handoff records exist.
-- [ ] GitHub CI observation helpers exist.
-- [ ] Release-readiness helper exists and respects unfinished licensing metadata.
-- [ ] Workflow structure is validated by xtask.
-- [ ] Exact implementation CI evidence is required before closure.
+- [x] Plan-first workflow is repository-enforced.
+- [x] Hooks are repository-owned and installable per clone.
+- [x] Tiered local gates exist.
+- [x] Stable, MSRV, all-feature, and no-default-feature paths are tested.
+- [x] Documentation remains a hard gate.
+- [x] Project state and agent handoff records exist.
+- [x] GitHub CI observation helpers exist.
+- [x] Release-readiness helper exists and respects unfinished licensing metadata.
+- [x] Workflow structure is validated by xtask.
+- [x] Exact implementation CI evidence is required before closure.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: 93397095be100be722e4bf48c0fc00a159f143b8
+CI run: https://github.com/darkstardevx/ferraxis/actions/runs/35406400983
+CI result: success
+Completed: 2026-09-18
+Notes: CI exposed and verified two workflow-hardening corrections before closure: canonical rustfmt layout in xtask and shell-safe Markdown handoff generation. Final validation passed stable code, feature isolation, Rust 1.85.0 MSRV, repository workflow/ShellCheck, and documentation/link jobs.

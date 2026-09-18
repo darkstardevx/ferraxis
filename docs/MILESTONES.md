@@ -30,7 +30,7 @@ Status values are `planned`, `active`, `complete`, `blocked`, `split`, and `supe
 | P0-M019 | complete | Documentation gate baseline | Rustdoc, structure validation, Markdown lint, and link checks exist. |
 | P0-M020 | complete | Release metadata baseline | Pre-1.0 release ladder and release criteria are documented. |
 | P0-M021 | planned | Licensing decision | Project license is selected and committed explicitly. |
-| P0-M022 | active | Agent workflow completion | Plan-first workflow, repository hooks, tiered gates, state/handoff records, MSRV/feature checks, and exact CI evidence are enforced. |
+| P0-M022 | complete | Agent workflow completion | Plan-first workflow, repository hooks, tiered gates, state/handoff records, MSRV/feature checks, and exact CI evidence are enforced. |
 
 ## Phase 1 — lexer completion
 
