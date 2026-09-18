@@ -15,17 +15,24 @@ fi
 
 tree_state="dirty"
 [[ -n "$(git status --porcelain)" ]] || tree_state="clean"
+branch_name="$(git branch --show-current)"
+head_sha="$(git rev-parse HEAD)"
 
-cat > AGENT_HANDOFF.md <<EOF
-# Ferraxis Agent Handoff
+python3 - "$branch_name" "$head_sha" "$tree_state" "$active_milestone" "$active_plan" "$next" <<'PY'
+from pathlib import Path
+import sys
+
+branch, head, tree_state, milestone, plan, next_action = sys.argv[1:]
+
+text = f"""# Ferraxis Agent Handoff
 
 ## Repository state
 
-- Branch: `$(git branch --show-current)`
-- HEAD: `$(git rev-parse HEAD)`
-- Working tree: $tree_state
-- Active milestone: $active_milestone
-- Active plan: `$active_plan`
+- Branch: `{branch}`
+- HEAD: `{head}`
+- Working tree: {tree_state}
+- Active milestone: {milestone}
+- Active plan: `{plan}`
 
 ## Resume checklist
 
@@ -38,12 +45,15 @@ cat > AGENT_HANDOFF.md <<EOF
 
 ## Next exact action
 
-$next
+{next_action}
 
 ## Validation rule
 
 Run `./scripts/gate.sh full` before claiming local completion. Record the exact successful GitHub
 Actions run in the plan before closing the milestone.
-EOF
+"""
+
+Path("AGENT_HANDOFF.md").write_text(text.rstrip("\n") + "\n")
+PY
 
 echo "Updated AGENT_HANDOFF.md"
