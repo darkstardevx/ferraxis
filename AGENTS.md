@@ -99,3 +99,68 @@ When documentation changed, also run:
 ```bash
 ./scripts/check-docs.sh
 ```
+
+## Plan-first workflow
+
+Rust and Cargo implementation is plan-first.
+
+1. Inspect repository state with `./scripts/project-status`.
+2. Select one permanent milestone.
+3. Create a plan with `./scripts/plan new <milestone> <slug>`.
+4. Edit the plan until file boundaries, tests, failure modes, documentation, and acceptance criteria
+   are explicit.
+5. Approve it with `./scripts/plan approve`.
+6. Commit the Approved plan before implementation.
+7. Only then modify Rust or Cargo implementation.
+8. Run `./scripts/gate.sh fast` during development and `./scripts/gate.sh full` before completion.
+9. Push the exact implementation commit and require exact CI success.
+10. Close the plan only with the successful CI run recorded.
+
+The Approved plan and implementation must not be introduced in the same commit.
+
+## Agent startup checklist
+
+Before editing:
+
+- run `git status`;
+- inspect recent commits;
+- run `./scripts/project-status`;
+- read `PROJECT_SPEC.md`;
+- read `PROJECT_STATE.md`;
+- read `AGENT_HANDOFF.md`;
+- read the active plan;
+- read relevant ADRs, invariants, and semantic evidence.
+
+## No-bypass rules
+
+Coding agents must not:
+
+- use `git commit --no-verify`;
+- disable or weaken a failing test merely to advance a milestone;
+- skip required documentation updates;
+- lower lint levels to hide failures;
+- silently raise the MSRV;
+- silently change dependency-resolution policy;
+- close a plan without exact successful CI evidence.
+
+## Recovery rules
+
+After a partially successful mutating command or script, inspect current state and repair forward.
+Do not blindly use `git reset --hard`, `git clean -fd`, or broad file deletion as a recovery
+strategy.
+
+## Toolchain and feature rules
+
+The declared MSRV is Rust 1.85 and is tested independently from stable. Repository checks use the
+committed `Cargo.lock`. Full validation includes all features and no default features. Future
+backend feature flags require explicit isolation coverage.
+
+## Generated text
+
+Tracked text files use LF line endings and end with exactly one newline. Prefer structural patches
+over brittle formatting-sensitive anchors.
+
+## Completion evidence
+
+A milestone requires an implementation commit and exact successful GitHub Actions run before its
+plan can become Complete. Update `PROJECT_STATE.md` and `AGENT_HANDOFF.md` at handoff boundaries.

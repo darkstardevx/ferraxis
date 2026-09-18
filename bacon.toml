@@ -1,0 +1,21 @@
+#:schema https://dystroy.org/bacon/.bacon.schema.json
+
+default_job = "check"
+
+[jobs.check]
+command = ["cargo", "check", "--workspace", "--all-targets", "--all-features", "--locked"]
+
+[jobs.clippy]
+command = ["cargo", "clippy", "--workspace", "--all-targets", "--all-features", "--locked", "--", "-D", "warnings"]
+
+[jobs.test]
+command = ["cargo", "test", "--workspace", "--all-features", "--locked"]
+
+[jobs.fast]
+command = ["./scripts/gate.sh", "fast"]
+
+[jobs.full]
+command = ["./scripts/gate.sh", "full"]
+
+[jobs.precommit]
+command = ["./scripts/gate.sh", "precommit"]

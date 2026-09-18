@@ -49,6 +49,7 @@ fn validate_docs() -> Result<(), String> {
     validate_milestones(&root)?;
     validate_semantics(&root)?;
     validate_required_text(&root)?;
+    validate_workflow(&root)?;
     println!("xtask: documentation structure passed");
     Ok(())
 }
@@ -109,7 +110,7 @@ fn validate_milestones(root: &Path) -> Result<(), String> {
         }
     }
     ensure_unique("milestone", &ids)?;
-    for required in ["P0-M001", "P0-M020", "P1-M001"] {
+    for required in ["P0-M001", "P0-M020", "P0-M022", "P1-M001"] {
         if !ids.iter().any(|id| id == required) {
             return Err(format!("required milestone `{required}` missing"));
         }
@@ -172,6 +173,101 @@ fn validate_required_text(root: &Path) -> Result<(), String> {
     for version in ["`0.0.1`", "`0.1.0`", "`0.6.0`"] {
         require_contains(&releases_path, &releases, version)?;
     }
+    Ok(())
+}
+
+fn validate_workflow(root: &Path) -> Result<(), String> {
+    for relative in [
+        "PROJECT_SPEC.md",
+        "PROJECT_STATE.md",
+        "AGENT_HANDOFF.md",
+        ".plans/README.md",
+        ".plans/TEMPLATE.plan.md",
+        "docs/DEVELOPMENT_WORKFLOW.md",
+    ] {
+        let path = root.join(relative);
+        if !path.is_file() {
+            return Err(format!(
+                "required workflow file missing: {}",
+                path.display()
+            ));
+        }
+        let text = read(&path)?;
+        if !text.ends_with('\n') {
+            return Err(format!("{} must end with a newline", path.display()));
+        }
+    }
+
+    let agents_path = root.join("AGENTS.md");
+    let agents = read(&agents_path)?;
+    for required in [
+        "## Plan-first workflow",
+        "## Agent startup checklist",
+        "## No-bypass rules",
+        "## Recovery rules",
+        "## Completion evidence",
+    ] {
+        require_contains(&agents_path, &agents, required)?;
+    }
+
+    let spec_path = root.join("PROJECT_SPEC.md");
+    let spec = read(&spec_path)?;
+    for required in [
+        "## Mission",
+        "## Non-goals",
+        "## Semantic authority",
+        "## Architecture contract",
+        "## Work contract",
+        "## Toolchain contract",
+        "## Completion definition",
+    ] {
+        require_contains(&spec_path, &spec, required)?;
+    }
+
+    let plan_template_path = root.join(".plans/TEMPLATE.plan.md");
+    let plan_template = read(&plan_template_path)?;
+    for required in [
+        "## Goal",
+        "## Non-goals",
+        "## Architecture placement",
+        "## Invariants",
+        "## ADRs",
+        "## Semantic evidence",
+        "## Test-first matrix",
+        "## Failure modes",
+        "## Quality gates",
+        "## Acceptance criteria",
+        "## Completion record",
+    ] {
+        require_contains(&plan_template_path, &plan_template, required)?;
+    }
+
+    let active_path = root.join(".plans/ACTIVE");
+    if active_path.is_file() {
+        let active = read(&active_path)?;
+        let active = active.trim();
+        if !active.starts_with(".plans/") || !active.ends_with(".plan.md") {
+            return Err(format!("invalid active plan path: {active}"));
+        }
+
+        let plan_path = root.join(active);
+        if !plan_path.is_file() {
+            return Err(format!("active plan is missing: {}", plan_path.display()));
+        }
+
+        let plan = read(&plan_path)?;
+        for required in [
+            "# Plan:",
+            "Status:",
+            "Milestone:",
+            "## Goal",
+            "## Acceptance criteria",
+            "## Completion record",
+        ] {
+            require_contains(&plan_path, &plan, required)?;
+        }
+    }
+
     Ok(())
 }
 

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+REPO="${FERRAXIS_GH_REPO:-darkstardevx/ferraxis}"
+RUN_ID="${1:-}"
+
+command -v gh >/dev/null 2>&1 || {
+  echo "error: gh is required" >&2
+  exit 1
+}
+
+if [[ -z "$RUN_ID" ]]; then
+  sha="$(git rev-parse HEAD)"
+  RUN_ID="$(
+    gh run list --repo "$REPO" --limit 30 --json databaseId,headSha       -q ".[] | select(.headSha == \"$sha\") | .databaseId" | head -n1
+  )"
+fi
+
+[[ -n "$RUN_ID" ]] || {
+  echo "error: no workflow run found" >&2
+  exit 1
+}
+
+gh run view "$RUN_ID" --repo "$REPO"
+echo
+gh run view "$RUN_ID" --repo "$REPO" --log-failed

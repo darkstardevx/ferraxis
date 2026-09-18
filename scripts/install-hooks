@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+chmod +x .githooks/pre-commit
+git config --local core.hooksPath .githooks
+
+actual="$(git config --local --get core.hooksPath)"
+[[ "$actual" == ".githooks" ]] || {
+  echo "ERROR: failed to install repository hooks" >&2
+  exit 1
+}
+
+echo "Installed Ferraxis hooks: core.hooksPath=.githooks"

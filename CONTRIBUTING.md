@@ -43,3 +43,27 @@ Pull requests should identify:
 - known unsupported behavior.
 
 Do not describe a feature as "Rust compatible" without stating the tested behavior and evidence.
+
+## Plan-first implementation
+
+Implementation changes require an Approved plan already committed in `HEAD`.
+
+```bash
+./scripts/plan new P0-M018 rustc-differential-lexer
+# edit the generated plan
+./scripts/plan approve
+git add .plans/ docs/MILESTONES.md
+git commit -m "docs(plan): approve P0-M018 differential lexer harness"
+```
+
+After that commit, implement the milestone and use:
+
+```bash
+./scripts/gate.sh fast
+./scripts/gate.sh full
+```
+
+Install repository hooks once per clone with `./scripts/install-hooks`.
+
+Milestone closure requires the exact successful GitHub Actions run for the implementation commit.
+See `docs/DEVELOPMENT_WORKFLOW.md`.

@@ -92,3 +92,19 @@ Read [AGENTS.md](AGENTS.md), [CONTRIBUTING.md](CONTRIBUTING.md), and
 
 No open-source license has been selected yet. Licensing is intentionally tracked as a Phase 0
 project decision rather than being silently chosen by bootstrap tooling.
+
+## Repository workflow
+
+Ferraxis uses plan-first compiler development.
+
+```bash
+./scripts/setup-dev
+./scripts/project-status
+./scripts/plan status
+./scripts/gate.sh fast
+./scripts/gate.sh full
+```
+
+See [Project specification](PROJECT_SPEC.md), [Project state](PROJECT_STATE.md),
+[Agent handoff](AGENT_HANDOFF.md), and
+[Development workflow](docs/DEVELOPMENT_WORKFLOW.md).

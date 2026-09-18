@@ -1,0 +1,128 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+cd "$(git rev-parse --show-toplevel)"
+
+ACTIVE=".plans/ACTIVE"
+TEMPLATE=".plans/TEMPLATE.plan.md"
+
+die() {
+  echo "error: $*" >&2
+  exit 1
+}
+
+read_active() {
+  [[ -f "$ACTIVE" ]] || die "no active plan"
+  local plan
+  plan="$(tr -d '\r\n' < "$ACTIVE")"
+  [[ "$plan" == .plans/*.plan.md ]] || die "invalid active plan path: $plan"
+  [[ -f "$plan" ]] || die "active plan file is missing: $plan"
+  printf '%s\n' "$plan"
+}
+
+status_of() {
+  grep '^Status:' "$1" | head -n1 | sed 's/^Status:[[:space:]]*//'
+}
+
+milestone_of() {
+  grep '^Milestone:' "$1" | head -n1 | sed 's/^Milestone:[[:space:]]*//'
+}
+
+case "${1:-status}" in
+  new)
+    milestone="${2:-}"
+    slug="${3:-}"
+    [[ "$milestone" =~ ^P[0-9]+-M[0-9]{3}$ ]] || die "usage: ./scripts/plan new P0-M018 slug"
+    [[ "$slug" =~ ^[a-z0-9][a-z0-9._-]*$ ]] || die "invalid plan slug"
+    [[ ! -e "$ACTIVE" ]] || die "another plan is already active"
+
+    path=".plans/${milestone}-${slug}.plan.md"
+    [[ ! -e "$path" ]] || die "plan already exists: $path"
+
+    title="$(printf '%s' "$slug" | tr '-_' '  ')"
+    today="$(date +%F)"
+
+    sed       -e "s/<MILESTONE>/${milestone}/g"       -e "s/<TITLE>/${title}/g"       -e "s/<YYYY-MM-DD>/${today}/g"       "$TEMPLATE" > "$path"
+
+    printf '%s\n' "$path" > "$ACTIVE"
+    echo "Created $path"
+    ;;
+  approve)
+    plan="$(read_active)"
+    [[ "$(status_of "$plan")" == "Draft" ]] || die "plan is not Draft: $plan"
+    sed -i 's/^Status: Draft$/Status: Approved/' "$plan"
+    echo "Approved $plan"
+    echo "Commit the Approved plan before implementation."
+    ;;
+  close)
+    plan="$(read_active)"
+    [[ "$(status_of "$plan")" == "Approved" ]] || die "plan is not Approved: $plan"
+
+    [[ "${2:-}" == "--ci-run" && -n "${3:-}" ]] ||
+      die "usage: ./scripts/plan close --ci-run <GitHub Actions URL>"
+
+    ci_run="$3"
+    [[ "$ci_run" == https://github.com/*/actions/runs/* ]] ||
+      die "CI run must be an exact GitHub Actions run URL"
+
+    command -v gh >/dev/null 2>&1 || die "gh is required to verify CI evidence"
+
+    implementation_commit="$(git rev-parse HEAD)"
+    run_id="${ci_run##*/}"
+    conclusion="$(gh run view "$run_id" --json conclusion -q .conclusion)"
+    head_sha="$(gh run view "$run_id" --json headSha -q .headSha)"
+
+    [[ "$conclusion" == "success" ]] || die "CI run is not successful"
+    [[ "$head_sha" == "$implementation_commit" ]] ||
+      die "CI run HEAD $head_sha does not match current HEAD $implementation_commit"
+
+    milestone="$(milestone_of "$plan")"
+    completed="$(date +%F)"
+
+    python3 - "$plan" "$milestone" "$implementation_commit" "$ci_run" "$completed" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+plan_path = Path(sys.argv[1])
+milestone = sys.argv[2]
+commit = sys.argv[3]
+ci_run = sys.argv[4]
+completed = sys.argv[5]
+
+text = plan_path.read_text()
+text = text.replace("Status: Approved", "Status: Complete", 1)
+text = re.sub(r"^Implementation commit:.*$", f"Implementation commit: {commit}", text, count=1, flags=re.MULTILINE)
+text = re.sub(r"^CI run:.*$", f"CI run: {ci_run}", text, count=1, flags=re.MULTILINE)
+text = re.sub(r"^CI result:.*$", "CI result: success", text, count=1, flags=re.MULTILINE)
+text = re.sub(r"^Completed:.*$", f"Completed: {completed}", text, count=1, flags=re.MULTILINE)
+plan_path.write_text(text.rstrip("\n") + "\n")
+
+milestones = Path("docs/MILESTONES.md")
+mtext = milestones.read_text()
+pattern = re.compile(rf"^(\| {re.escape(milestone)} \| )(active)( \|.*)$", re.MULTILINE)
+mtext, count = pattern.subn(r"\1complete\3", mtext, count=1)
+if count != 1:
+    raise SystemExit(f"ERROR: could not mark {milestone} complete")
+milestones.write_text(mtext.rstrip("\n") + "\n")
+PY
+
+    rm "$ACTIVE"
+    echo "Closed $plan with verified CI evidence."
+    ;;
+  status)
+    if [[ ! -f "$ACTIVE" ]]; then
+      echo "No active implementation plan."
+      exit 0
+    fi
+    plan="$(read_active)"
+    echo "Active plan: $plan"
+    grep -E '^(Status|Milestone|Created):' "$plan"
+    ;;
+  show)
+    cat "$(read_active)"
+    ;;
+  *)
+    die "usage: ./scripts/plan {new <milestone> <slug>|approve|close --ci-run <url>|status|show}"
+    ;;
+esac

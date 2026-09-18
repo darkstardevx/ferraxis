@@ -33,3 +33,15 @@ A release requires:
 5. affected semantic records to be current;
 6. affected ADRs and invariants to be current;
 7. release notes to distinguish implemented, unsupported, and intentionally variant behavior.
+
+## Validation layers
+
+Normal development validates stable Rust with the committed lockfile. The full gate additionally
+validates Rust 1.85.0, all features, no default features, documentation, repository workflow
+structure, and shell tooling.
+
+The release gate adds package-content validation. It is intentionally blocked until P0-M021
+completes the explicit licensing decision and package metadata is release-ready.
+
+A release candidate must be traceable to an exact successful CI run for the exact commit being
+released.
