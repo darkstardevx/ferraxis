@@ -31,6 +31,9 @@ tokenize and form token trees from a fragment embedded in a generated probe.
 
 That observation is useful only if Ferraxis records its scope honestly.
 
+This Approved plan must receive a complete green CI checkpoint before any Rust or Cargo harness
+implementation is committed. The checkpoint itself is part of P0-M018 evidence.
+
 ## Architecture placement
 
 The harness is repository tooling, not compiler frontend architecture.
