@@ -59,4 +59,3 @@ P0-M018 uses these classifications:
 
 A classification is evidence, not a correctness verdict. Interpretation still follows
 `docs/SEMANTICS_AUTHORITY.md`.
-
