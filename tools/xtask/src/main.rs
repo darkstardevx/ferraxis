@@ -187,7 +187,10 @@ fn validate_workflow(root: &Path) -> Result<(), String> {
     ] {
         let path = root.join(relative);
         if !path.is_file() {
-            return Err(format!("required workflow file missing: {}", path.display()));
+            return Err(format!(
+                "required workflow file missing: {}",
+                path.display()
+            ));
         }
         let text = read(&path)?;
         if !text.ends_with('\n') {
