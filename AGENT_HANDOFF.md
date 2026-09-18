@@ -2,11 +2,10 @@
 
 ## Repository state
 
-- Completed milestone: `P0-M022`
-- Active milestone: none
-- Active plan: none
-- Next compiler milestone: `P0-M018`
-- Verified P0-M022 implementation CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
+- Active milestone: `P0-M018`
+- Active plan: `.plans/P0-M018-rustc-differential-lexer.plan.md`
+- Plan status: `Approved`
+- Implementation status: not started
 
 ## Resume checklist
 
@@ -14,30 +13,29 @@
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Confirm there is no stale `.plans/ACTIVE`.
-6. Read ADR-0006 before differential-testing work.
-7. Create the P0-M018 plan before changing Rust implementation.
-8. Never bypass repository hooks.
+5. Read the active P0-M018 plan.
+6. Read ADR-0001, ADR-0006, ADR-0011, and ADR-0012.
+7. Read `docs/SEMANTICS_AUTHORITY.md` and `docs/TESTING.md`.
+8. Confirm the Approved-plan commit passed CI before changing Rust/Cargo implementation.
+9. Never bypass repository hooks.
 
-## Completed work
+## Current work
 
-P0-M022 made Ferraxis compiler-governance complete and agent-workflow complete. The final verified
-implementation head passed stable code, feature-isolation, MSRV 1.85.0, repository workflow, and
-documentation gates.
+P0-M018 is establishing a reproducible, versioned differential lexer-observation skeleton without
+depending on rustc-private or nightly interfaces.
+
+## Observation boundary
+
+The rustc side is a stable macro token-tree acceptance probe. It is not a raw rustc lexer dump and
+must not be described as token-for-token equivalence.
 
 ## Next exact action
 
-After PR #1 merges and `main` CI is green, create a dedicated P0-M018 branch and run:
-
-```bash
-./scripts/plan new P0-M018 rustc-differential-lexer
-```
-
-Fill the plan with the differential-evidence contract, corpus boundary, version capture, result
-classification, failure modes, and tests. Approve and commit that plan before implementing the
-harness.
+Wait for the plan-only P0-M018 CI checkpoint. If and only if that checkpoint is green, implement
+`tools/ferraxis-diff`, the initial corpus, deterministic evidence output, and the dedicated CI
+differential job.
 
 ## Validation rule
 
-Do not claim P0-M018 progress from prototype code alone. Differential observations must be
-reproducible, versioned, and interpreted through Ferraxis's semantic-authority hierarchy.
+Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
+Ferraxis's semantic-authority hierarchy.

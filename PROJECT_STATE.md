@@ -13,18 +13,16 @@ Phase 0 — compiler foundation.
 
 ## Active milestone
 
-No implementation milestone is active. P0-M022 is complete and awaiting merge of its closure
-record.
+- `P0-M018` — Differential lexer harness skeleton.
+- Plan: `.plans/P0-M018-rustc-differential-lexer.plan.md`
+- Plan status: Approved.
+- Implementation status: not started; the Approved plan checkpoint must pass CI first.
 
 ## Completed workflow milestone
 
 - `P0-M022` — Agent workflow completion.
-- Implementation head: `93397095be100be722e4bf48c0fc00a159f143b8`
-- Verified CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
-
-## Next compiler milestone
-
-- `P0-M018` — Differential lexer harness skeleton.
+- Main merge: `4804cc98f13374845d926603680974d6552a2232`
+- Main merge CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406658633>
 
 ## Other open Phase 0 decisions
 
@@ -36,11 +34,10 @@ Ferraxis currently provides source-file storage, byte positions and half-open sp
 diagnostic data, initial ASCII whitespace and identifier lexing, exact `fn` recognition, explicit
 EOF tokens, and deterministic token dumping.
 
-## Workflow state
+## Differential-testing boundary
 
-The Rust-agent workflow is now repository-enforced: plan-first commits, repository hooks, tiered
-gates, state/handoff records, stable plus MSRV validation, feature isolation, exact CI evidence,
-shell validation, and release-readiness helpers are present.
+P0-M018 will compare Ferraxis lexer acceptance with a stable rustc macro token-tree acceptance
+probe. It will not claim access to rustc's raw lexer token stream.
 
 ## Known blockers
 
@@ -49,6 +46,5 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Merge PR #1 only after the P0-M022 closure commit itself passes CI. Then synchronize local
-`main`, install repository hooks with `./scripts/setup-dev`, and open P0-M018 with a new Draft
-plan that is reviewed, Approved, and committed before implementation begins.
+Require the P0-M018 Approved-plan commit to pass CI. Only then add the differential harness
+implementation under the unchanged Approved plan.
