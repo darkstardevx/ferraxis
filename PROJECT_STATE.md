@@ -20,7 +20,7 @@ record.
 
 - `P0-M022` — Agent workflow completion.
 - Implementation head: `93397095be100be722e4bf48c0fc00a159f143b8`
-- Verified CI: https://github.com/darkstardevx/ferraxis/actions/runs/35406400983
+- Verified CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
 
 ## Next compiler milestone
 
