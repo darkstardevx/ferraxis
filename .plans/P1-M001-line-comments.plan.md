@@ -234,7 +234,6 @@ mechanism may add exact EOF differential evidence without weakening the tracked-
 
 ## Failure modes
 
-
 - Treating all `//` prefixes as ordinary comments and silently discarding doc comments.
 - Incorrectly treating exactly three slashes as an ordinary comment.
 - Incorrectly rejecting `////` even though it is a normal line comment.
