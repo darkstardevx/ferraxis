@@ -40,6 +40,14 @@ This observation is useful but must not be described as token-for-token lexer eq
 Delimiter balancing and macro token-tree construction can reject input after or alongside lexical
 processing.
 
+From P1-M005 onward, the Ferraxis lexer intentionally emits flat delimiter tokens without checking
+pairing or group balance under ADR-0013. Therefore unmatched or mismatched delimiter corpus cases
+may classify as `rustc_rejects`: Ferraxis recognizes the flat delimiter tokens while the rustc
+macro token-tree probe rejects the unbalanced group structure.
+
+That classification is expected evidence about the observation boundary. It must not be used as a
+reason to move delimiter grouping into the lexer.
+
 Every differential run records:
 
 - exact `rustc --version --verbose` output;

@@ -40,7 +40,7 @@ Status values are `planned`, `active`, `complete`, `blocked`, `split`, and `supe
 | P1-M002 | complete | Block comments |
 | P1-M003 | complete | Nested block comments |
 | P1-M004 | complete | Punctuation |
-| P1-M005 | planned | Delimiters |
+| P1-M005 | complete | Delimiters |
 | P1-M006 | planned | Integer literals |
 | P1-M007 | planned | Character literals |
 | P1-M008 | planned | String literals |

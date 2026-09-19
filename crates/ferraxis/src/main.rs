@@ -64,6 +64,9 @@ fn run() -> Result<(), String> {
             TokenKind::Punctuation(punctuation) => {
                 println!("Punctuation {lo}..{hi}  {:?}", punctuation.as_str());
             }
+            TokenKind::Delimiter(delimiter) => {
+                println!("Delimiter   {lo}..{hi}  {:?}", delimiter.as_str());
+            }
             TokenKind::Eof => println!("Eof         {lo}..{hi}"),
         }
     }

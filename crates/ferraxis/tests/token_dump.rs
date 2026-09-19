@@ -57,3 +57,30 @@ Identifier  12..17  \"value\"\n\
 Eof         18..18\n"
     );
 }
+
+#[test]
+fn dumps_delimiters_with_spans_and_spelling() {
+    let path =
+        std::env::temp_dir().join(format!("ferraxis-delimiter-dump-{}.rs", std::process::id()));
+
+    fs::write(&path, "fn(main)\n").expect("write temporary source");
+
+    let output = Command::new(env!("CARGO_BIN_EXE_ferraxis"))
+        .arg("--emit=tokens")
+        .arg(&path)
+        .output()
+        .expect("run ferraxis");
+
+    let _ = fs::remove_file(&path);
+
+    assert!(output.status.success());
+
+    assert_eq!(
+        String::from_utf8(output.stdout).expect("utf8 stdout"),
+        "Fn          0..2\n\
+Delimiter   2..3  \"(\"\n\
+Identifier  3..7  \"main\"\n\
+Delimiter   7..8  \")\"\n\
+Eof         9..9\n"
+    );
+}

@@ -46,3 +46,4 @@ not yet implemented.
 | SEM-LEX-0005 | Active | Non-doc block comments |
 | SEM-LEX-0006 | Active | Recursive nested block comments |
 | SEM-LEX-0007 | Active | Punctuation tokenization |
+| SEM-LEX-0008 | Active | Delimiter tokenization |
