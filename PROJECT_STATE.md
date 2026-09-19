@@ -13,23 +13,17 @@ Phase 1 — lexer completion.
 
 ## Active milestone
 
-No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
+- `P1-M002` — Block comments.
+- Active plan: `.plans/P1-M002-block-comments.plan.md`.
+- Plan status: Approved.
+- Implementation status: not started; exact plan-only CI must succeed first.
 
 ## Recently completed milestone
 
 - `P1-M001` — Line comments.
-- Final validated implementation head: `b4b8e10f4a95dfde6837e0e8d605746eab695317`.
-- Exact implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35417098551>.
-- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10575823857`.
-- Result: 14/14 committed differential classifications matched.
-
-## Earlier completed foundation
-
-- `P0-M018` — Differential lexer harness skeleton.
-- Main merge: `694ba6a11ccf7c7136aa7649e9edb0dcbd970caf`.
+- Merge commit: `cc28d3265d6cc18af520593226158016b5423990`.
 - Post-merge main CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35415828585>.
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417271818>.
 
 ## Other open Phase 0 decisions
 
@@ -42,12 +36,20 @@ data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary n
 comments, explicit EOF tokens, deterministic token dumping, and a versioned differential
 lexer-observation harness.
 
-Ordinary Rust non-doc `LINE_COMMENT` input is treated as whitespace and terminates at LF or EOF.
-The implementation supports UTF-8 comment bodies and `////...` ordinary comments while
-preserving original byte offsets for following tokens.
+P1-M002 will add depth-one ordinary non-doc block comments. Recursive nested block comments remain
+P1-M003. Block documentation comments remain explicitly unsupported.
 
-Outer `///` and inner `//!` documentation comments remain explicitly unsupported. P1-M001 does not
-claim a complete Rust input-normalization pipeline.
+## P1-M002 semantic boundary
+
+The Rust Reference treats non-doc block comments as whitespace and supports nesting.
+
+P1-M002 intentionally implements only non-nested ordinary comments:
+
+- `/**/` and `/***/` are ordinary block comments;
+- `/** text */` is outer block documentation syntax and remains unsupported;
+- `/*! text */` is inner block documentation syntax and remains unsupported;
+- nested `/*` inside an open block comment is a controlled temporary rejection until P1-M003;
+- unterminated block comments are controlled lexical failures.
 
 ## Known blockers
 
@@ -56,6 +58,5 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-No implementation may begin until a new milestone plan is created, reviewed, Approved, committed,
-and validated by CI. The next planned compiler milestone is `P1-M002` — block comments. P0-M021
-licensing remains a separate Phase 0 release-governance decision.
+Require the Approved P1-M002 plan checkpoint to pass the complete CI matrix. Only after that exact
+green checkpoint may Rust or Cargo implementation begin.

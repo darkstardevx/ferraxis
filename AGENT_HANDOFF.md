@@ -2,15 +2,11 @@
 
 ## Repository state
 
-- Active milestone: none.
-- Active plan: none.
-- P1-M001 status: Complete.
-- Final validated P1-M001 implementation head:
-  `b4b8e10f4a95dfde6837e0e8d605746eab695317`.
-- P1-M001 implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35417098551>.
-- Differential artifact ID: `10575823857`.
-- Differential result: 14/14 committed classifications matched.
+- Active milestone: `P1-M002`.
+- Active plan: `.plans/P1-M002-block-comments.plan.md`.
+- Plan status: `Approved`.
+- Implementation status: not started.
+- Required checkpoint: exact plan-only CI success before Rust or Cargo changes.
 
 ## Resume checklist
 
@@ -18,48 +14,47 @@
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Confirm there is no active implementation plan before choosing new work.
-6. Read the relevant ADRs and semantic evidence for the next milestone.
-7. Never bypass repository hooks or weaken a gate.
+5. Read the active P1-M002 plan.
+6. Read `SEM-LEX-0005`.
+7. Read ADR-0001, ADR-0003, ADR-0006, ADR-0011, and ADR-0012.
+8. Confirm the exact Approved-plan checkpoint passed CI before implementation.
+9. Never bypass repository hooks or weaken a gate.
 
-## Completed work
+## Current work
 
-P1-M001 implements ordinary Rust non-documentation line comments as lexical whitespace.
+P1-M002 will implement the non-nested subset of ordinary Rust block comments.
 
-Validated behavior includes:
+Important frozen boundaries:
 
-- LF and EOF termination;
-- UTF-8 comment-body bytes;
-- bare CR remaining inside a comment until LF;
-- `////...` ordinary comments;
-- original byte offsets for tokens following comments;
-- controlled unsupported behavior for outer `///` and inner `//!` documentation comments.
+- `/* ... */` ordinary comments become whitespace;
+- `/**/` is an ordinary empty block comment;
+- `/***/` and `/*** text */` are ordinary comments;
+- `/** text */` remains unsupported outer block documentation syntax;
+- `/*! text */` remains unsupported inner block documentation syntax;
+- nested `/*` inside an open block comment is rejected at the nested opener until P1-M003;
+- EOF before `*/` is a controlled lexical failure.
 
-The final differential evidence matched all 14 committed classifications. The new comment cases
-classified `agree_accept` and the previously documented lexer gaps remained unchanged.
+## Evidence basis
+
+Primary authority is the Rust Reference comments grammar. The differential harness supplies
+additional L4 observation evidence.
+
+P1-M002 will add supported block-comment cases, an unterminated case expected to `agree_reject`,
+and an intentional nested-comment case expected to remain `ferraxis_rejects` until P1-M003.
 
 ## Observation boundary
 
 The rustc side remains a stable macro token-tree acceptance probe. It is not a raw rustc lexer
 dump and must not be described as token-for-token equivalence.
 
-## Next compiler milestone
+## Next exact action
 
-The next planned compiler milestone is `P1-M002` — block comments.
-
-Before Rust or Cargo implementation:
-
-1. create a P1-M002 plan with `./scripts/plan new P1-M002 block-comments`;
-2. research and document Rust block-comment and documentation-comment boundaries;
-3. complete the test-first, compatibility, dependency, and evidence sections;
-4. approve the plan with `./scripts/plan approve`;
-5. commit the Approved plan by itself;
-6. require that exact plan checkpoint to pass CI;
-7. only then implement block comments.
-
-P0-M021 licensing remains separate and continues to block release readiness.
+Require the plan-only head to pass the complete CI matrix. If green, implement only the approved
+depth-one block-comment scope, inspect differential evidence, close P1-M002, and merge only after
+closed-state CI succeeds.
 
 ## Validation rule
 
-Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
-Ferraxis's semantic-authority hierarchy.
+Do not collapse block documentation comments into ordinary comments. Do not accidentally truncate
+nested comments at an inner `*/`. Differential classifications are evidence, not correctness
+verdicts.
