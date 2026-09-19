@@ -6,7 +6,7 @@ Recursive nesting of block-comment forms inside an ordinary Rust block comment.
 
 ## Status
 
-Planned
+Active
 
 ## Primary authority
 
@@ -21,10 +21,9 @@ L1 — explicit Rust language definition/specification.
 
 ## Ferraxis behavior
 
-P1-M003 will complete recursive block-comment nesting for top-level ordinary non-doc block
-comments.
+Ferraxis supports recursive block-comment nesting for top-level ordinary non-doc block comments.
 
-The scanner will use iterative depth tracking:
+The scanner uses iterative depth tracking:
 
 - top-level ordinary `/*` starts depth one;
 - every nested `/*` increments depth;
@@ -48,7 +47,7 @@ The scanner is iterative, linear in source length, and constant in auxiliary mem
 
 ## Tests
 
-Planned coverage:
+Coverage exists in:
 
 - unit tests in `crates/ferraxis-lexer/src/lib.rs`;
 - versioned differential cases under `tests/differential/lexer/`.

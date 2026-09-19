@@ -5,34 +5,25 @@
 - Active milestone: `P1-M003`.
 - Active plan: `.plans/P1-M003-nested-block-comments.plan.md`.
 - Plan status: `Approved`.
-- Implementation status: not started.
-- Required checkpoint: exact plan-only CI success before Rust or Cargo changes.
-
-## Resume checklist
-
-1. Read `PROJECT_SPEC.md`.
-2. Read `PROJECT_STATE.md`.
-3. Read `AGENTS.md`.
-4. Run `./scripts/project-status`.
-5. Read the active P1-M003 plan.
-6. Read `SEM-LEX-0005` and `SEM-LEX-0006`.
-7. Read ADR-0001, ADR-0003, ADR-0006, ADR-0011, and ADR-0012.
-8. Confirm exact Approved-plan CI success before implementation.
-9. Never bypass repository hooks or weaken a gate.
+- Implementation status: recursive nested block comments implemented; exact implementation CI,
+  evidence inspection, and closure remain.
+- Approved plan checkpoint: `5c7cb524c4007e28a997b09d89660d520b51ebe9`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419633488>.
 
 ## Current work
 
-P1-M003 will implement recursive nesting inside ordinary Rust block comments.
+P1-M003 now uses iterative depth tracking inside top-level ordinary block comments.
 
-Frozen boundaries:
+Implemented boundaries awaiting exact CI:
 
-- the scanner uses an iterative depth counter;
-- nested ordinary `/* ... */` contributes to depth;
-- nested `/** ... */` and `/*! ... */` forms also contribute to depth when already inside an
-  ordinary outer comment;
+- every nested `/*` increments depth;
+- every `*/` decrements depth;
+- nested ordinary, outer-doc, and inner-doc forms all participate in depth;
+- scanning resumes only when outer depth reaches zero;
+- EOF with nonzero depth fails at the original outer opener;
+- no arbitrary nesting cap or recursive function call is introduced;
 - top-level block documentation comments remain unsupported;
-- EOF before depth returns to zero is a controlled failure at the outer opener;
-- no arbitrary nesting cap is introduced;
 - original byte offsets remain authoritative.
 
 ## Evidence basis
@@ -40,8 +31,8 @@ Frozen boundaries:
 Primary authority is the Rust Reference recursive `BLOCK_COMMENT` grammar and
 `BLOCK_COMMENT_OR_DOC` production.
 
-The existing `nested-block-comment` differential case must move from `ferraxis_rejects` to
-`agree_accept`. New cases will cover deeper and mixed nesting plus unterminated nested input.
+The existing `nested-block-comment` differential case now expects `agree_accept`. New cases
+cover depth-three, nested outer-doc, nested inner-doc, mixed forms, and unterminated nesting.
 
 ## Observation boundary
 
@@ -50,9 +41,8 @@ dump and must not be described as token-for-token equivalence.
 
 ## Next exact action
 
-Require the plan-only head to pass the complete CI matrix. If green, implement iterative nesting,
-inspect the expanded differential artifact, close P1-M003, and require closed-state CI before
-merge.
+Require the implementation head to pass the complete CI matrix, inspect the differential artifact,
+record exact evidence, close P1-M003, and require closed-state CI before merge.
 
 ## Validation rule
 
