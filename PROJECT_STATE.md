@@ -17,19 +17,20 @@ No implementation milestone is currently active and `.plans/ACTIVE` is intention
 
 ## Recently completed milestone
 
-- `P1-M001` — Line comments.
-- Final validated implementation head: `b4b8e10f4a95dfde6837e0e8d605746eab695317`.
+- `P1-M002` — Block comments.
+- Final validated implementation head: `92ea27771b195f341da9062ca871eddb131e7363`.
 - Exact implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35417098551>.
-- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10575823857`.
-- Result: 14/14 committed differential classifications matched.
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10576662999`.
+- Result: 22/22 committed differential classifications matched.
+- Intentional remaining lexer gap: nested block comments are reserved for `P1-M003`.
 
-## Earlier completed foundation
+## Earlier completed Phase 1 milestone
 
-- `P0-M018` — Differential lexer harness skeleton.
-- Main merge: `694ba6a11ccf7c7136aa7649e9edb0dcbd970caf`.
+- `P1-M001` — Line comments.
+- Merge commit: `cc28d3265d6cc18af520593226158016b5423990`.
 - Post-merge main CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35415828585>.
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417271818>.
 
 ## Other open Phase 0 decisions
 
@@ -39,15 +40,15 @@ No implementation milestone is currently active and `.plans/ACTIVE` is intention
 
 Ferraxis provides source-file storage, byte positions and half-open spans, structured diagnostic
 data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary non-doc line
-comments, explicit EOF tokens, deterministic token dumping, and a versioned differential
-lexer-observation harness.
+comments, depth-one ordinary non-doc block comments, explicit EOF tokens, deterministic token
+dumping, and a versioned differential lexer-observation harness.
 
-Ordinary Rust non-doc `LINE_COMMENT` input is treated as whitespace and terminates at LF or EOF.
-The implementation supports UTF-8 comment bodies and `////...` ordinary comments while
-preserving original byte offsets for following tokens.
+Supported block comments include multiline, UTF-8, `/**/`, `/***/`, and `/*** text */`
+forms. Outer `/** text */` and inner `/*! text */` block documentation comments remain
+unsupported.
 
-Outer `///` and inner `//!` documentation comments remain explicitly unsupported. P1-M001 does not
-claim a complete Rust input-normalization pipeline.
+Unterminated block comments fail in a controlled way. Nested `/*` fails at the nested opener
+until P1-M003 implements recursive nesting.
 
 ## Known blockers
 
@@ -56,6 +57,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-No implementation may begin until a new milestone plan is created, reviewed, Approved, committed,
-and validated by CI. The next planned compiler milestone is `P1-M002` — block comments. P0-M021
-licensing remains a separate Phase 0 release-governance decision.
+No Rust or Cargo implementation may begin until a new milestone plan is created, reviewed,
+Approved, committed by itself, and validated by CI. The next planned compiler milestone is
+`P1-M003` — nested block comments.
