@@ -358,10 +358,7 @@ mod tests {
 
     #[test]
     fn skips_unicode_block_comment_body() {
-        assert_eq!(
-            kinds("/* café */fn"),
-            vec![TokenKind::Fn, TokenKind::Eof]
-        );
+        assert_eq!(kinds("/* café */fn"), vec![TokenKind::Fn, TokenKind::Eof]);
     }
 
     #[test]
@@ -374,10 +371,7 @@ mod tests {
 
     #[test]
     fn bare_cr_is_text_inside_block_comment() {
-        assert_eq!(
-            kinds("/* a\rb */fn"),
-            vec![TokenKind::Fn, TokenKind::Eof]
-        );
+        assert_eq!(kinds("/* a\rb */fn"), vec![TokenKind::Fn, TokenKind::Eof]);
     }
 
     #[test]
@@ -418,11 +412,8 @@ mod tests {
 
     #[test]
     fn rejects_nested_block_comment_at_nested_opener() {
-        let error = lex(&SourceFile::new(
-            "test.rs",
-            "/* outer /* inner */ outer */",
-        ))
-        .expect_err("nested block comment is reserved for P1-M003");
+        let error = lex(&SourceFile::new("test.rs", "/* outer /* inner */ outer */"))
+            .expect_err("nested block comment is reserved for P1-M003");
         assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
         assert_eq!(error.span.lo().get(), 9);
         assert_eq!(error.span.hi().get(), 10);
