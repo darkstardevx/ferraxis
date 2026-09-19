@@ -232,12 +232,13 @@ The unmatched-delimiter case is explicitly token-tree evidence, not proof of a r
 ## Completion record
 
 Implementation commit: dc9b792c42e1fe111ea60c88358ec8c2f9d9038a
-CI run: https://github.com/darkstardevx/ferraxis/actions/runs/35415625792
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35415625792>
 CI result: success
 Completed: 2026-09-18
 Notes: 11/11 committed classifications matched; final evidence artifact inspected.
 
 Evidence:
+
 - Approved-plan checkpoint head: `72caa6023b2879f23eaabeb037aa684d793a1f83`.
 - Harness implementation commit: `1e65997b1ae80b2deb560a1774c678e7109d9e1c`.
 - Final validated head: `dc9b792c42e1fe111ea60c88358ec8c2f9d9038a`.
