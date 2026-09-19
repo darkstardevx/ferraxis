@@ -13,16 +13,19 @@ Phase 1 — lexer completion.
 
 ## Active milestone
 
-- `P1-M002` — Block comments.
-- Active plan: `.plans/P1-M002-block-comments.plan.md`.
-- Plan status: Approved.
-- Implementation status: implemented on the feature branch; exact implementation CI and evidence
-  inspection are still required.
-- Approved plan checkpoint: `0ce202345327701705763364da3dc3859a55a376`.
-- Plan checkpoint CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35417983279>.
+No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
 
 ## Recently completed milestone
+
+- `P1-M002` — Block comments.
+- Final validated implementation head: `92ea27771b195f341da9062ca871eddb131e7363`.
+- Exact implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10576662999`.
+- Result: 22/22 committed differential classifications matched.
+- Intentional remaining lexer gap: nested block comments are reserved for `P1-M003`.
+
+## Earlier completed Phase 1 milestone
 
 - `P1-M001` — Line comments.
 - Merge commit: `cc28d3265d6cc18af520593226158016b5423990`.
@@ -40,14 +43,11 @@ data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary n
 comments, depth-one ordinary non-doc block comments, explicit EOF tokens, deterministic token
 dumping, and a versioned differential lexer-observation harness.
 
-## P1-M002 semantic boundary
+Supported block comments include multiline, UTF-8, `/**/`, `/***/`, and `/*** text */`
+forms. Outer `/** text */` and inner `/*! text */` block documentation comments remain
+unsupported.
 
-Supported depth-one ordinary block comments are lexical whitespace.
-
-The implementation correctly treats `/**/`, `/***/`, and `/*** text */` as ordinary comments while
-leaving `/** text */` and `/*! text */` block documentation syntax unsupported.
-
-Unterminated comments fail at the original opening slash. Nested `/*` fails at the nested opener
+Unterminated block comments fail in a controlled way. Nested `/*` fails at the nested opener
 until P1-M003 implements recursive nesting.
 
 ## Known blockers
@@ -57,6 +57,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the exact P1-M002 implementation head to pass the complete CI matrix. Inspect uploaded
-differential evidence, then close P1-M002 only if supported, unterminated, and nested cases match
-their committed classifications.
+No Rust or Cargo implementation may begin until a new milestone plan is created, reviewed,
+Approved, committed by itself, and validated by CI. The next planned compiler milestone is
+`P1-M003` — nested block comments.

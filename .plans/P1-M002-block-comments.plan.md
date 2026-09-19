@@ -1,6 +1,6 @@
 # Plan: P1-M002 — Non-nested block comments
 
-Status: Approved
+Status: Complete
 Milestone: P1-M002
 Created: 2026-09-18
 
@@ -280,37 +280,65 @@ No Cargo manifest or dependency changes are expected.
 
 ## Acceptance criteria
 
-- [ ] Depth-one ordinary non-doc block comments are interpreted as whitespace.
-- [ ] Basic and multiline block comments are supported.
-- [ ] Empty `/**/` is supported as an ordinary block comment.
-- [ ] `/***/` is supported as an ordinary block comment.
-- [ ] `/*** text */` is supported as an ordinary block comment.
-- [ ] UTF-8 block-comment bodies are skipped safely.
-- [ ] `//` inside a block comment is body text.
-- [ ] Bare CR inside an ordinary block-comment body is handled safely.
-- [ ] Outer block doc comments remain explicitly unsupported.
-- [ ] Inner block doc comments remain explicitly unsupported.
-- [ ] Unterminated block comments fail in a controlled way.
-- [ ] Nested block-comment openers fail at the nested opener until P1-M003.
-- [ ] Token spans after supported comments preserve original byte offsets.
-- [ ] EOF remains exactly one zero-width token at original source length.
-- [ ] Existing line-comment behavior remains green.
-- [ ] Existing lexer behavior remains green.
-- [ ] Differential supported-comment cases match `agree_accept`.
-- [ ] Differential unterminated-comment case matches `agree_reject`.
-- [ ] Differential nested-comment case remains `ferraxis_rejects` and documents P1-M003.
-- [ ] No dependency is added.
-- [ ] Relevant semantic evidence is current.
-- [ ] Exact implementation commit passes the complete CI matrix.
-- [ ] Differential artifact is inspected before closure.
-- [ ] Exact closed-state commit passes CI.
-- [ ] `PROJECT_STATE.md` is current.
-- [ ] `AGENT_HANDOFF.md` is current.
+- [x] Depth-one ordinary non-doc block comments are interpreted as whitespace.
+- [x] Basic and multiline block comments are supported.
+- [x] Empty `/**/` is supported as an ordinary block comment.
+- [x] `/***/` is supported as an ordinary block comment.
+- [x] `/*** text */` is supported as an ordinary block comment.
+- [x] UTF-8 block-comment bodies are skipped safely.
+- [x] `//` inside a block comment is body text.
+- [x] Bare CR inside an ordinary block-comment body is handled safely.
+- [x] Outer block doc comments remain explicitly unsupported.
+- [x] Inner block doc comments remain explicitly unsupported.
+- [x] Unterminated block comments fail in a controlled way.
+- [x] Nested block-comment openers fail at the nested opener until P1-M003.
+- [x] Token spans after supported comments preserve original byte offsets.
+- [x] EOF remains exactly one zero-width token at original source length.
+- [x] Existing line-comment behavior remains green.
+- [x] Existing lexer behavior remains green.
+- [x] Differential supported-comment cases match `agree_accept`.
+- [x] Differential unterminated-comment case matches `agree_reject`.
+- [x] Differential nested-comment case remains `ferraxis_rejects` and documents P1-M003.
+- [x] No dependency is added.
+- [x] Relevant semantic evidence is current.
+- [x] Exact implementation commit passes the complete CI matrix.
+- [x] Differential artifact is inspected before closure.
+- [x] Exact closed-state commit passes CI.
+- [x] `PROJECT_STATE.md` is current.
+- [x] `AGENT_HANDOFF.md` is current.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: 92ea27771b195f341da9062ca871eddb131e7363
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>
+CI result: success
+Completed: 2026-09-18
+Notes: P1-M002 completed with exact implementation CI and inspected differential evidence.
+
+Evidence:
+
+- Approved plan checkpoint: `0ce202345327701705763364da3dc3859a55a376`.
+- Approved plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417983279>.
+- Semantic implementation commit: `aba3586ad26e8c1225d66e22dddcba7e21114d7e`.
+- Run 35418110514 identified rustfmt-only drift; no semantic failure was reported.
+- Final validated implementation head: `92ea27771b195f341da9062ca871eddb131e7363`.
+- Exact successful implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10576662999`.
+- Artifact digest:
+  `sha256:86cecd860f9eacb11e44b87e87e152bf6a93dfe277ed25b5b0c631fc4cf30550`.
+- CI rustc identity: `rustc 1.98.1 (48a229cea 2026-09-01)`,
+  host `x86_64-unknown-linux-gnu`.
+- Differential classifications matched: 22/22.
+- `block-comment`, `block-comment-before-fn`, `block-comment-empty`,
+  `block-comment-multiline`, `block-comment-triple-star`, and
+  `block-comment-unicode` all classified `agree_accept`.
+- `block-comment-unterminated` classified `agree_reject`; rustc reported E0758 for an
+  unterminated block comment.
+- `nested-block-comment` classified `ferraxis_rejects`, preserving the intentional P1-M003 gap.
+- Existing known gaps for bare underscore, integer literals, and Unicode identifiers remained
+  unchanged.
+- `unmatched-open-delimiter` remained `agree_reject`.
+- The exact CI matrix covered stable code checks, feature isolation, MSRV 1.85.0, repository
+  workflow/text policy, differential evidence, and documentation validation.
