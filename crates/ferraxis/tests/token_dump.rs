@@ -30,8 +30,10 @@ fn dumps_initial_token_stream() {
 
 #[test]
 fn dumps_punctuation_with_spans_and_spelling() {
-    let path =
-        std::env::temp_dir().join(format!("ferraxis-punctuation-dump-{}.rs", std::process::id()));
+    let path = std::env::temp_dir().join(format!(
+        "ferraxis-punctuation-dump-{}.rs",
+        std::process::id()
+    ));
 
     fs::write(&path, "fn->main += value\n").expect("write temporary source");
 

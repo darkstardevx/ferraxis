@@ -30,7 +30,6 @@ pub enum TokenKind {
     Eof,
 }
 
-
 /// One non-delimiter punctuation spelling recognized by the P1-M004 lexer.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum Punctuation {
@@ -88,39 +87,7 @@ pub enum Punctuation {
     Bang,
     /// The `#` punctuation token.
     Pound,
-    /// The `//! The Ferraxis lexer.
-//!
-//! The current slice recognizes ASCII whitespace, ordinary non-documentation line comments,
-//! recursively nested ordinary non-documentation block comments, the `fn` keyword, an ASCII
-//! identifier subset, non-delimiter punctuation, and EOF. Unsupported source produces structured
-//! lexical errors instead of being guessed.
-
-use ferraxis_source::SourceFile;
-use ferraxis_span::{BytePos, Span};
-
-/// One lexical token.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub struct Token {
-    /// Token classification.
-    pub kind: TokenKind,
-    /// Half-open source span.
-    pub span: Span,
-}
-
-/// Token kinds implemented by the current lexer slice.
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
-pub enum TokenKind {
-    /// The exact strict keyword `fn`.
-    Fn,
-    /// An identifier in the currently supported ASCII subset.
-    Identifier,
-    /// One non-delimiter punctuation token.
-    Punctuation(Punctuation),
-    /// Explicit end-of-file marker used internally by Ferraxis.
-    Eof,
-}
-
- punctuation token.
+    /// The dollar-sign punctuation token.
     Dollar,
     /// The `%` punctuation token.
     Percent,
@@ -816,33 +783,55 @@ mod tests {
         assert_eq!(tokens[1].span.hi().get(), 9);
     }
 
-
     #[test]
     fn recognizes_all_non_delimiter_punctuation_spellings() {
         let cases = [
-            ("...", Punctuation::Ellipsis), ("..=", Punctuation::DotDotEq),
-            ("<<=", Punctuation::ShlEq), (">>=", Punctuation::ShrEq),
-            ("!=", Punctuation::BangEq), ("%=", Punctuation::PercentEq),
-            ("&&", Punctuation::AmpAmp), ("&=", Punctuation::AmpEq),
-            ("*=", Punctuation::StarEq), ("+=", Punctuation::PlusEq),
-            ("-=", Punctuation::MinusEq), ("->", Punctuation::ThinArrow),
-            ("..", Punctuation::DotDot), ("/=", Punctuation::SlashEq),
-            ("::", Punctuation::ColonColon), ("<-", Punctuation::LeftArrow),
-            ("<<", Punctuation::Shl), ("<=", Punctuation::LessEq),
-            ("==", Punctuation::EqEq), ("=>", Punctuation::FatArrow),
-            (">=", Punctuation::GreaterEq), (">>", Punctuation::Shr),
-            ("^=", Punctuation::CaretEq), ("|=", Punctuation::PipeEq),
-            ("||", Punctuation::PipePipe), ("!", Punctuation::Bang),
-            ("#", Punctuation::Pound), ("$", Punctuation::Dollar),
-            ("%", Punctuation::Percent), ("&", Punctuation::Amp),
-            ("*", Punctuation::Star), ("+", Punctuation::Plus),
-            (",", Punctuation::Comma), ("-", Punctuation::Minus),
-            (".", Punctuation::Dot), ("/", Punctuation::Slash),
-            (":", Punctuation::Colon), (";", Punctuation::Semicolon),
-            ("<", Punctuation::Less), ("=", Punctuation::Eq),
-            (">", Punctuation::Greater), ("?", Punctuation::Question),
-            ("@", Punctuation::At), ("^", Punctuation::Caret),
-            ("|", Punctuation::Pipe), ("~", Punctuation::Tilde),
+            ("...", Punctuation::Ellipsis),
+            ("..=", Punctuation::DotDotEq),
+            ("<<=", Punctuation::ShlEq),
+            (">>=", Punctuation::ShrEq),
+            ("!=", Punctuation::BangEq),
+            ("%=", Punctuation::PercentEq),
+            ("&&", Punctuation::AmpAmp),
+            ("&=", Punctuation::AmpEq),
+            ("*=", Punctuation::StarEq),
+            ("+=", Punctuation::PlusEq),
+            ("-=", Punctuation::MinusEq),
+            ("->", Punctuation::ThinArrow),
+            ("..", Punctuation::DotDot),
+            ("/=", Punctuation::SlashEq),
+            ("::", Punctuation::ColonColon),
+            ("<-", Punctuation::LeftArrow),
+            ("<<", Punctuation::Shl),
+            ("<=", Punctuation::LessEq),
+            ("==", Punctuation::EqEq),
+            ("=>", Punctuation::FatArrow),
+            (">=", Punctuation::GreaterEq),
+            (">>", Punctuation::Shr),
+            ("^=", Punctuation::CaretEq),
+            ("|=", Punctuation::PipeEq),
+            ("||", Punctuation::PipePipe),
+            ("!", Punctuation::Bang),
+            ("#", Punctuation::Pound),
+            ("$", Punctuation::Dollar),
+            ("%", Punctuation::Percent),
+            ("&", Punctuation::Amp),
+            ("*", Punctuation::Star),
+            ("+", Punctuation::Plus),
+            (",", Punctuation::Comma),
+            ("-", Punctuation::Minus),
+            (".", Punctuation::Dot),
+            ("/", Punctuation::Slash),
+            (":", Punctuation::Colon),
+            (";", Punctuation::Semicolon),
+            ("<", Punctuation::Less),
+            ("=", Punctuation::Eq),
+            (">", Punctuation::Greater),
+            ("?", Punctuation::Question),
+            ("@", Punctuation::At),
+            ("^", Punctuation::Caret),
+            ("|", Punctuation::Pipe),
+            ("~", Punctuation::Tilde),
         ];
 
         for (spelling, expected) in cases {
@@ -916,6 +905,7 @@ mod tests {
             assert_eq!(error.span.lo().get(), 0);
             assert_eq!(error.span.hi().get(), 1);
         }
+
         assert_eq!(
             kinds("# #"),
             vec![
@@ -969,7 +959,10 @@ mod tests {
         assert_eq!(tokens[0].kind, TokenKind::Fn);
         assert_eq!(tokens[0].span.lo().get(), 0);
         assert_eq!(tokens[0].span.hi().get(), 2);
-        assert_eq!(tokens[1].kind, TokenKind::Punctuation(Punctuation::ThinArrow));
+        assert_eq!(
+            tokens[1].kind,
+            TokenKind::Punctuation(Punctuation::ThinArrow)
+        );
         assert_eq!(tokens[1].span.lo().get(), 2);
         assert_eq!(tokens[1].span.hi().get(), 4);
         assert_eq!(tokens[2].kind, TokenKind::Identifier);
