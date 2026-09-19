@@ -330,7 +330,7 @@ No Cargo manifest, lockfile, or dependency change is expected.
 | `->` / `-` | boundary unit test | exact variants |
 | `=>` / `==` / `=` | boundary unit test | exact variants |
 | `&&` / `&=` / `&` | boundary unit test | exact variants |
-| `||` / `|=` / `|` | boundary unit test | exact variants |
+| double-pipe / pipe-equals / pipe | boundary unit test | exact variants |
 | `// comment` | regression | still a comment |
 | `/* nested /* x */ */` | regression | still a nested comment |
 | `/// docs` | regression | still controlled unsupported failure |
