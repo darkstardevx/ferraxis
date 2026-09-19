@@ -270,11 +270,14 @@ fn read_expectations(path: &Path) -> Result<BTreeMap<String, Classification>, St
         let id = fields
             .next()
             .ok_or_else(|| format!("missing case ID at {}:{line_number}", path.display()))?;
-        let classification = fields.next().ok_or_else(|| {
-            format!("missing classification at {}:{line_number}", path.display())
-        })?;
+        let classification = fields
+            .next()
+            .ok_or_else(|| format!("missing classification at {}:{line_number}", path.display()))?;
         if fields.next().is_some() {
-            return Err(format!("too many fields at {}:{line_number}", path.display()));
+            return Err(format!(
+                "too many fields at {}:{line_number}",
+                path.display()
+            ));
         }
 
         validate_case_id(id)?;
