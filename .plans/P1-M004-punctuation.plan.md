@@ -1,6 +1,6 @@
 # Plan: P1-M004 — Punctuation
 
-Status: Approved
+Status: Complete
 Milestone: P1-M004
 Created: 2026-09-18
 
@@ -410,38 +410,68 @@ No Cargo manifest, lockfile, or dependency change is expected.
 
 ## Acceptance criteria
 
-- [ ] All 46 non-delimiter Reference punctuation spellings have explicit token identities.
-- [ ] `TokenKind::Punctuation(Punctuation)` is implemented.
-- [ ] `Punctuation::as_str()` maps every variant exactly.
-- [ ] Longest-match behavior is deterministic and regression tested.
-- [ ] Comment recognition retains priority over punctuation.
-- [ ] Existing nested block comments remain green.
-- [ ] Top-level line doc comments remain unsupported.
-- [ ] Top-level block doc comments remain unsupported.
-- [ ] `##` and longer pound runs remain rejected in edition-2024 behavior.
-- [ ] Identifier-adjacent pound reserved prefixes remain rejected.
-- [ ] `r#name` remains an explicit P1-M011 gap rather than being split.
-- [ ] Delimiters remain an explicit P1-M005 gap.
-- [ ] Bare underscore remains outside P1-M004.
-- [ ] Lifetimes/single quote remain outside P1-M004.
-- [ ] Existing identifier and `fn` behavior remains green.
-- [ ] Token spans are exact byte ranges.
-- [ ] Token-dump CLI renders punctuation deterministically.
-- [ ] Differential punctuation groups classify `agree_accept`.
-- [ ] Reserved-pound and reserved-prefix cases classify `agree_reject`.
-- [ ] Raw-identifier and matched-delimiter cases classify `ferraxis_rejects`.
-- [ ] No dependency is added.
-- [ ] SEM-LEX-0007 is current.
-- [ ] Exact implementation head passes all CI jobs.
-- [ ] Differential artifact is inspected before closure.
-- [ ] Exact closed-state head passes all CI jobs.
-- [ ] `PROJECT_STATE.md` is current.
-- [ ] `AGENT_HANDOFF.md` is current.
+- [x] All 46 non-delimiter Reference punctuation spellings have explicit token identities.
+- [x] `TokenKind::Punctuation(Punctuation)` is implemented.
+- [x] `Punctuation::as_str()` maps every variant exactly.
+- [x] Longest-match behavior is deterministic and regression tested.
+- [x] Comment recognition retains priority over punctuation.
+- [x] Existing nested block comments remain green.
+- [x] Top-level line doc comments remain unsupported.
+- [x] Top-level block doc comments remain unsupported.
+- [x] `##` and longer pound runs remain rejected in edition-2024 behavior.
+- [x] Identifier-adjacent pound reserved prefixes remain rejected.
+- [x] `r#name` remains an explicit P1-M011 gap rather than being split.
+- [x] Delimiters remain an explicit P1-M005 gap.
+- [x] Bare underscore remains outside P1-M004.
+- [x] Lifetimes/single quote remain outside P1-M004.
+- [x] Existing identifier and `fn` behavior remains green.
+- [x] Token spans are exact byte ranges.
+- [x] Token-dump CLI renders punctuation deterministically.
+- [x] Differential punctuation groups classify `agree_accept`.
+- [x] Reserved-pound and reserved-prefix cases classify `agree_reject`.
+- [x] Raw-identifier and matched-delimiter cases classify `ferraxis_rejects`.
+- [x] No dependency is added.
+- [x] SEM-LEX-0007 is current.
+- [x] Exact implementation head passes all CI jobs.
+- [x] Differential artifact is inspected before closure.
+- [x] Exact closed-state head passes all CI jobs.
+- [x] `PROJECT_STATE.md` is current.
+- [x] `AGENT_HANDOFF.md` is current.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: 7baa2974e1fbc109399ccc91e94d9802489d6b7e
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35420906959>
+CI result: success
+Completed: 2026-09-18
+Notes: P1-M004 completed after implementation repair, exact CI validation, and differential artifact inspection.
+
+Evidence:
+
+- Initial Approved plan commit: `e81717b3849b43970e94a9a779430d9f24f60ac7`.
+- Initial plan CI run 35420510194 failed only on Markdown table lint.
+- Final Approved plan checkpoint: `d7070206d1cbb8cff04edea49ca688f653259060`.
+- Final Approved plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35420536691>.
+- Initial semantic implementation commit: `fce2ce1055c2b7a61d44f9729e78ebea5975fc53`.
+- Implementation CI run 35420746526 exposed a generated-source assembly defect and rustfmt drift.
+- Repair commit: `16f5ed90658808ed66fc782aadf4ef1636c8f9f5`.
+- Run 35420884872 was superseded by the final rustfmt-only repair and cancelled.
+- Final validated implementation head: `7baa2974e1fbc109399ccc91e94d9802489d6b7e`.
+- Exact successful implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35420906959>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10577067943`.
+- Artifact digest:
+  `sha256:7f6ec43b847a84d6cbe72d8f2b1eab32d66b01239c119d6915a8a288b053ae7a`.
+- CI rustc identity: `rustc 1.98.1 (48a229cea 2026-09-01)`,
+  host `x86_64-unknown-linux-gnu`.
+- Differential classifications matched: 33/33.
+- `punct-all` and `punct-comment-mix` classified `agree_accept`.
+- `reserved-pounds` and `reserved-pound-prefix` classified `agree_reject`.
+- `raw-identifier` remains `ferraxis_rejects` until P1-M011.
+- `paired-delimiters` remains `ferraxis_rejects` until P1-M005.
+- Existing lexer gaps for bare underscore, integer literals, and Unicode identifiers remained unchanged.
+- Stable code, feature isolation, MSRV 1.85.0, repository workflow, differential evidence, and
+  documentation validation all passed on the exact final implementation head.
+- Manual representation audit confirmed 46 explicit variants, 46 exact source spellings, and
+  longest-first 3-byte / 2-byte / 1-byte recognition order.
