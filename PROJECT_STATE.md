@@ -13,16 +13,18 @@ Phase 1 — lexer completion.
 
 ## Active milestone
 
-- `P1-M001` — Line comments.
-- Active plan: `.plans/P1-M001-line-comments.plan.md`.
-- Plan status: Approved.
-- Implementation status: implemented on the feature branch; exact final CI evidence and closure are
-  still required.
-- Approved plan checkpoint: `75f65b476606941e50a25b65cfef6d6c364da5a9`.
-- Plan checkpoint CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35416909308>.
+No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
 
 ## Recently completed milestone
+
+- `P1-M001` — Line comments.
+- Final validated implementation head: `b4b8e10f4a95dfde6837e0e8d605746eab695317`.
+- Exact implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417098551>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10575823857`.
+- Result: 14/14 committed differential classifications matched.
+
+## Earlier completed foundation
 
 - `P0-M018` — Differential lexer harness skeleton.
 - Main merge: `694ba6a11ccf7c7136aa7649e9edb0dcbd970caf`.
@@ -40,15 +42,12 @@ data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary n
 comments, explicit EOF tokens, deterministic token dumping, and a versioned differential
 lexer-observation harness.
 
-## P1-M001 semantic boundary
-
 Ordinary Rust non-doc `LINE_COMMENT` input is treated as whitespace and terminates at LF or EOF.
 The implementation supports UTF-8 comment bodies and `////...` ordinary comments while
 preserving original byte offsets for following tokens.
 
-Outer `///` and inner `//!` documentation comments remain explicitly unsupported so Ferraxis does
-not erase syntax with attribute semantics. P1-M001 does not claim a complete Rust
-input-normalization pipeline.
+Outer `///` and inner `//!` documentation comments remain explicitly unsupported. P1-M001 does not
+claim a complete Rust input-normalization pipeline.
 
 ## Known blockers
 
@@ -57,6 +56,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the P1-M001 implementation head to pass the complete PR CI matrix. Inspect the uploaded
-differential evidence and verify the line-comment cases match committed expectations. Only then
-record exact CI evidence and close P1-M001.
+No implementation may begin until a new milestone plan is created, reviewed, Approved, committed,
+and validated by CI. The next planned compiler milestone is `P1-M002` — block comments. P0-M021
+licensing remains a separate Phase 0 release-governance decision.

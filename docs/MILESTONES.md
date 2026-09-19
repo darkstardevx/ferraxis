@@ -36,7 +36,7 @@ Status values are `planned`, `active`, `complete`, `blocked`, `split`, and `supe
 
 | ID | Status | Milestone |
 | --- | --- | --- |
-| P1-M001 | active | Line comments |
+| P1-M001 | complete | Line comments |
 | P1-M002 | planned | Block comments |
 | P1-M003 | planned | Nested block comments |
 | P1-M004 | planned | Punctuation |

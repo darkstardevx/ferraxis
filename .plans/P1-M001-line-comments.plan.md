@@ -1,6 +1,6 @@
 # Plan: P1-M001 — Non-doc line comments
 
-Status: Approved
+Status: Complete
 Milestone: P1-M001
 Created: 2026-09-18
 
@@ -264,32 +264,58 @@ mechanism may add exact EOF differential evidence without weakening the tracked-
 
 ## Acceptance criteria
 
-- [ ] Ordinary Rust non-doc line comments are interpreted as whitespace.
-- [ ] Empty `//` comments are supported.
-- [ ] EOF-terminated `//` comments are supported.
-- [ ] LF terminates a line comment.
-- [ ] Bare CR does not terminate a line comment.
-- [ ] Unicode UTF-8 bytes inside an ordinary line comment are ignored safely.
-- [ ] `////...` is handled as an ordinary non-doc line comment.
-- [ ] `///...` remains explicitly unsupported by this milestone.
-- [ ] `//!...` remains explicitly unsupported by this milestone.
-- [ ] Token spans after comments preserve original byte offsets.
-- [ ] EOF remains exactly one zero-width token at original source length.
-- [ ] Existing lexer behavior remains green.
-- [ ] Differential line-comment evidence changes to `agree_accept`.
-- [ ] Added representable differential boundary cases match committed expectations.
-- [ ] No dependency is added.
-- [ ] Relevant semantic evidence is current.
-- [ ] Full local gate passes.
-- [ ] Exact implementation commit passes CI.
-- [ ] Differential artifact is inspected before closure.
-- [ ] `PROJECT_STATE.md` is current.
-- [ ] `AGENT_HANDOFF.md` is current.
+- [x] Ordinary Rust non-doc line comments are interpreted as whitespace.
+- [x] Empty `//` comments are supported.
+- [x] EOF-terminated `//` comments are supported.
+- [x] LF terminates a line comment.
+- [x] Bare CR does not terminate a line comment.
+- [x] Unicode UTF-8 bytes inside an ordinary line comment are ignored safely.
+- [x] `////...` is handled as an ordinary non-doc line comment.
+- [x] `///...` remains explicitly unsupported by this milestone.
+- [x] `//!...` remains explicitly unsupported by this milestone.
+- [x] Token spans after comments preserve original byte offsets.
+- [x] EOF remains exactly one zero-width token at original source length.
+- [x] Existing lexer behavior remains green.
+- [x] Differential line-comment evidence changes to `agree_accept`.
+- [x] Added representable differential boundary cases match committed expectations.
+- [x] No dependency is added.
+- [x] Relevant semantic evidence is current.
+- [x] Full local gate passes.
+- [x] Exact implementation commit passes CI.
+- [x] Differential artifact is inspected before closure.
+- [x] `PROJECT_STATE.md` is current.
+- [x] `AGENT_HANDOFF.md` is current.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: b4b8e10f4a95dfde6837e0e8d605746eab695317
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35417098551>
+CI result: success
+Completed: 2026-09-18
+Notes: P1-M001 completed with exact implementation CI and inspected differential evidence.
+
+Evidence:
+
+- Approved plan checkpoint: `75f65b476606941e50a25b65cfef6d6c364da5a9`.
+- Approved plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35416909308>.
+- Final validated implementation head: `b4b8e10f4a95dfde6837e0e8d605746eab695317`.
+- Exact implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417098551>.
+- Differential artifact: `p0-m018-differential-lexer`, GitHub artifact ID `10575823857`.
+- Artifact digest:
+  `sha256:c5de668d3ae557c7d73b591c9aef5e0017f51acca1cad3c0e3f07939b4e82783`.
+- CI rustc identity: `rustc 1.98.1 (48a229cea 2026-09-01)`,
+  host `x86_64-unknown-linux-gnu`.
+- Differential classifications matched: 14/14.
+- `line-comment`, `line-comment-before-fn`, `line-comment-unicode`, and
+  `four-slash-comment` all classified `agree_accept`.
+- Existing known gaps for bare underscore, integer literals, and Unicode identifiers remained
+  unchanged.
+- Only `unmatched-open-delimiter` produced rustc stderr, matching its committed `agree_reject`
+  token-tree observation.
+- EOF-terminated line comments are covered directly by lexer unit tests because tracked corpus
+  fixtures must end with exactly one LF.
+- The exact CI matrix executed every constituent of `scripts/gate.sh full`: stable fast checks,
+  feature isolation, MSRV, shell policy, and documentation validation.
+
