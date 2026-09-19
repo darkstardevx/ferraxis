@@ -6,7 +6,7 @@ Recognition and treatment of Rust non-documentation line comments.
 
 ## Status
 
-Planned
+Active
 
 ## Primary authority
 
@@ -20,31 +20,31 @@ L1 — explicit Rust language definition/specification.
 
 ## Ferraxis behavior
 
-P1-M001 will implement the Rust Reference `LINE_COMMENT` category as lexical whitespace.
+Ferraxis implements the Rust Reference `LINE_COMMENT` category as lexical whitespace.
 
 An ordinary non-doc line comment begins with `//` when that prefix is not the start of an inner or
 outer line documentation comment. Its body continues until LF or EOF and produces no token.
 
-The milestone will explicitly distinguish:
+The implemented boundary distinguishes:
 
 - `//` and `// text` as ordinary line comments;
 - `////...` as an ordinary line comment;
 - `///...` as an unsupported outer line documentation comment;
 - `//!...` as an unsupported inner line documentation comment.
 
-Documentation comments are not whitespace-equivalent syntax and are therefore not silently
-discarded by P1-M001.
+UTF-8 bytes in the ordinary comment body are skipped without decoding requirements, and a bare CR
+does not end a line comment. Ferraxis source spans continue to use original UTF-8 byte offsets.
 
-Ferraxis source spans continue to use original UTF-8 byte offsets. This record does not claim that
-Ferraxis has implemented Rust's complete input-normalization pipeline.
+Ferraxis does not yet claim a complete Rust input-normalization pipeline. In particular, P1-M001
+does not add a general CRLF-normalization stage.
 
 ## Tests
 
-Planned coverage:
-
 - unit tests in `crates/ferraxis-lexer/src/lib.rs`;
-- token-dump regression coverage when useful;
-- versioned cases under `tests/differential/lexer/`.
+- versioned differential cases under `tests/differential/lexer/`.
+
+EOF-terminated comments are covered directly by unit tests because tracked text fixtures must end
+with exactly one LF under repository policy.
 
 ## Variance
 

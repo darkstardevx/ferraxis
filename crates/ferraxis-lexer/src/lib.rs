@@ -1,7 +1,8 @@
-//! The first Ferraxis lexer slice.
+//! The Ferraxis lexer.
 //!
-//! Phase 0 deliberately recognizes only ASCII whitespace, the `fn` keyword, an ASCII identifier
-//! subset, and EOF. Unsupported bytes produce structured lexical errors instead of being guessed.
+//! The current slice recognizes ASCII whitespace, ordinary non-documentation line comments,
+//! the `fn` keyword, an ASCII identifier subset, and EOF. Unsupported source produces
+//! structured lexical errors instead of being guessed.
 
 use ferraxis_source::SourceFile;
 use ferraxis_span::{BytePos, Span};
@@ -15,7 +16,7 @@ pub struct Token {
     pub span: Span,
 }
 
-/// Token kinds implemented by the Phase 0 lexer slice.
+/// Token kinds implemented by the current lexer slice.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum TokenKind {
     /// The exact strict keyword `fn`.
@@ -26,7 +27,7 @@ pub enum TokenKind {
     Eof,
 }
 
-/// A lexical error produced for source outside the supported Phase 0 slice.
+/// A lexical error produced for source outside the supported lexer slice.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct LexError {
     /// Span covering the unsupported byte.
@@ -35,20 +36,24 @@ pub struct LexError {
     pub kind: LexErrorKind,
 }
 
-/// Kinds of Phase 0 lexical failure.
+/// Kinds of lexical failure in the currently supported slice.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum LexErrorKind {
     /// An unsupported source byte was encountered.
     UnexpectedByte(u8),
-    /// A source file exceeds the Phase 0 `u32` position representation.
+    /// A source file exceeds the current `u32` position representation.
     SourceTooLarge,
 }
 
-/// Tokenizes one source file using the supported Phase 0 lexical subset.
+/// Tokenizes one source file using the currently supported lexical subset.
+///
+/// Ordinary non-documentation line comments are treated as whitespace. Line documentation
+/// comments remain unsupported until their attribute semantics are implemented.
 ///
 /// # Errors
 ///
-/// Returns [`LexError`] for unsupported source bytes or files too large for Phase 0 byte positions.
+/// Returns [`LexError`] for unsupported source bytes or files too large for the current byte
+/// position representation.
 pub fn lex(source: &SourceFile) -> Result<Vec<Token>, LexError> {
     let bytes = source.text().as_bytes();
     let source_len = source.byte_len().ok_or(LexError {
@@ -62,6 +67,14 @@ pub fn lex(source: &SourceFile) -> Result<Vec<Token>, LexError> {
     while cursor < bytes.len() {
         if is_ascii_whitespace(bytes[cursor]) {
             cursor += 1;
+            continue;
+        }
+
+        if is_non_doc_line_comment_start(bytes, cursor) {
+            cursor += 2;
+            while cursor < bytes.len() && bytes[cursor] != b'\n' {
+                cursor += 1;
+            }
             continue;
         }
 
@@ -98,6 +111,18 @@ pub fn lex(source: &SourceFile) -> Result<Vec<Token>, LexError> {
 
 fn is_ascii_whitespace(byte: u8) -> bool {
     matches!(byte, b' ' | b'\t' | b'\n' | b'\r' | 0x0b | 0x0c)
+}
+
+fn is_non_doc_line_comment_start(bytes: &[u8], cursor: usize) -> bool {
+    if bytes.get(cursor) != Some(&b'/') || bytes.get(cursor + 1) != Some(&b'/') {
+        return false;
+    }
+
+    match bytes.get(cursor + 2) {
+        Some(&b'!') => false,
+        Some(&b'/') => bytes.get(cursor + 3) == Some(&b'/'),
+        _ => true,
+    }
 }
 
 fn is_identifier_start(byte: u8) -> bool {
@@ -188,6 +213,74 @@ mod tests {
     }
 
     #[test]
+    fn skips_empty_line_comment() {
+        assert_eq!(kinds("//\nfn"), vec![TokenKind::Fn, TokenKind::Eof]);
+    }
+
+    #[test]
+    fn skips_eof_terminated_line_comment() {
+        let source = SourceFile::new("test.rs", "// comment");
+        let tokens = lex(&source).expect("EOF-terminated line comment should lex");
+
+        assert_eq!(tokens.len(), 1);
+        assert_eq!(tokens[0].kind, TokenKind::Eof);
+        assert_eq!(tokens[0].span.lo().get(), 10);
+        assert_eq!(tokens[0].span.hi().get(), 10);
+    }
+
+    #[test]
+    fn skips_inline_line_comment() {
+        assert_eq!(
+            kinds("fn// comment\nmain"),
+            vec![TokenKind::Fn, TokenKind::Identifier, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn skips_four_slash_line_comment() {
+        assert_eq!(
+            kinds("//// comment\nfn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn skips_unicode_line_comment_body() {
+        assert_eq!(kinds("// café\nfn"), vec![TokenKind::Fn, TokenKind::Eof]);
+    }
+
+    #[test]
+    fn line_comment_continues_through_cr_before_lf() {
+        assert_eq!(
+            kinds("// comment\r\nfn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn bare_cr_does_not_end_line_comment() {
+        assert_eq!(kinds("// a\rb\nfn"), vec![TokenKind::Fn, TokenKind::Eof]);
+    }
+
+    #[test]
+    fn rejects_outer_line_doc_comment_for_now() {
+        let error =
+            lex(&SourceFile::new("test.rs", "/// docs\nfn")).expect_err("doc comment unsupported");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 0);
+        assert_eq!(error.span.hi().get(), 1);
+    }
+
+    #[test]
+    fn rejects_inner_line_doc_comment_for_now() {
+        let error =
+            lex(&SourceFile::new("test.rs", "//! docs\nfn")).expect_err("doc comment unsupported");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 0);
+        assert_eq!(error.span.hi().get(), 1);
+    }
+
+    #[test]
     fn preserves_token_spans() {
         let source = SourceFile::new("test.rs", "fn main");
         let tokens = lex(&source).expect("input should lex");
@@ -197,6 +290,18 @@ mod tests {
         assert_eq!(tokens[1].span.hi().get(), 7);
         assert_eq!(tokens[2].span.lo().get(), 7);
         assert_eq!(tokens[2].span.hi().get(), 7);
+    }
+
+    #[test]
+    fn preserves_token_spans_after_line_comment() {
+        let source = SourceFile::new("test.rs", "// x\nfn");
+        let tokens = lex(&source).expect("line comment followed by token should lex");
+        assert_eq!(tokens[0].kind, TokenKind::Fn);
+        assert_eq!(tokens[0].span.lo().get(), 5);
+        assert_eq!(tokens[0].span.hi().get(), 7);
+        assert_eq!(tokens[1].kind, TokenKind::Eof);
+        assert_eq!(tokens[1].span.lo().get(), 7);
+        assert_eq!(tokens[1].span.hi().get(), 7);
     }
 
     #[test]

@@ -5,8 +5,11 @@ empty	agree_accept
 fn	agree_accept
 fn-main	agree_accept
 fnn	agree_accept
+four-slash-comment	agree_accept
 integer	ferraxis_rejects
-line-comment	ferraxis_rejects
+line-comment	agree_accept
+line-comment-before-fn	agree_accept
+line-comment-unicode	agree_accept
 underscore-main	agree_accept
 unicode-ident	ferraxis_rejects
 unmatched-open-delimiter	agree_reject

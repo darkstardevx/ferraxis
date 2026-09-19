@@ -5,8 +5,11 @@
 - Active milestone: `P1-M001`.
 - Active plan: `.plans/P1-M001-line-comments.plan.md`.
 - Plan status: `Approved`.
-- Implementation status: not started.
-- Required checkpoint: complete green CI for the plan-only commit before Rust/Cargo changes.
+- Implementation status: ordinary non-doc line comments implemented; final CI evidence and closure
+  remain.
+- Approved plan checkpoint: `75f65b476606941e50a25b65cfef6d6c364da5a9`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35416909308>.
 
 ## Resume checklist
 
@@ -17,34 +20,37 @@
 5. Read the active P1-M001 plan.
 6. Read `SEM-LEX-0004`.
 7. Read ADR-0001, ADR-0003, ADR-0006, ADR-0011, and ADR-0012.
-8. Confirm the Approved-plan commit passed CI before changing Rust or Cargo implementation.
-9. Never bypass repository hooks or weaken a gate.
+8. Never bypass repository hooks or weaken a gate.
 
 ## Current work
 
-P1-M001 will add ordinary Rust non-documentation line comments to the lexer.
+P1-M001 now implements ordinary Rust non-documentation line comments as lexical whitespace.
 
-The semantic boundary is intentionally narrow:
+The implementation boundary remains narrow:
 
-- ordinary `//...` comments are whitespace;
-- EOF and LF termination are supported;
+- ordinary `//...` comments are skipped;
+- EOF and LF termination are covered;
+- bare CR remains comment content until LF;
+- UTF-8 comment-body bytes are skipped safely;
 - `////...` is ordinary comment syntax;
 - `///...` remains unsupported outer documentation-comment syntax;
-- `//!...` remains unsupported inner documentation-comment syntax.
+- `//!...` remains unsupported inner documentation-comment syntax;
+- token spans after comments retain original byte offsets.
 
 ## Evidence basis
 
-Primary authority is the Rust Reference comments grammar. The P0-M018 differential harness will be
-used as additional L4 evidence after implementation.
+Primary authority is the Rust Reference comments grammar. The differential harness supplies
+additional L4 observations.
 
-The existing `line-comment` differential case should move from `ferraxis_rejects` to
-`agree_accept` once implementation lands.
+The existing `line-comment` case and new representable line-comment boundary cases are expected
+to classify as `agree_accept`. EOF termination is covered directly by a unit test because tracked
+text fixtures must end with exactly one LF.
 
 ## Next exact action
 
-Require the plan-only head to pass the full CI matrix. If it is green, implement P1-M001 inside the
-approved file boundary, update differential expectations, inspect evidence, and close only after
-exact implementation CI success.
+Require the implementation head to pass the full PR CI matrix. Inspect the uploaded differential
+artifact. If all jobs are green and the evidence matches the Approved plan, record that exact CI
+run in the plan and close P1-M001.
 
 ## Validation rule
 
