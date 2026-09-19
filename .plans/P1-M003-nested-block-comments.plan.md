@@ -1,6 +1,6 @@
 # Plan: P1-M003 — Nested block comments
 
-Status: Approved
+Status: Complete
 Milestone: P1-M003
 Created: 2026-09-18
 
@@ -283,38 +283,64 @@ No Cargo manifest or dependency changes are expected.
 
 ## Acceptance criteria
 
-- [ ] One-level nested ordinary block comments are supported.
-- [ ] Multi-level nested ordinary block comments are supported.
-- [ ] Nested empty and triple-star ordinary comments are supported.
-- [ ] Nested outer block-doc forms are counted and skipped inside an ordinary outer comment.
-- [ ] Nested inner block-doc forms are counted and skipped inside an ordinary outer comment.
-- [ ] Mixed nested block-comment forms are handled correctly.
-- [ ] No arbitrary nesting-depth cap is introduced.
-- [ ] Scanner is iterative rather than recursively calling itself.
-- [ ] Unterminated nested comments fail in a controlled way at the outer opener.
-- [ ] UTF-8, CR, and line-marker bytes inside nested bodies are safe.
-- [ ] Token spans after nested comments preserve original byte offsets.
-- [ ] Top-level outer block doc comments remain unsupported.
-- [ ] Top-level inner block doc comments remain unsupported.
-- [ ] Existing line comments remain green.
-- [ ] Existing non-nested block comments remain green.
-- [ ] Existing lexer behavior remains green.
-- [ ] Existing `nested-block-comment` differential case becomes `agree_accept`.
-- [ ] Added deeper and mixed differential cases classify `agree_accept`.
-- [ ] Unterminated nested differential case classifies `agree_reject`.
-- [ ] No dependency is added.
-- [ ] SEM-LEX-0005 variance is updated.
-- [ ] SEM-LEX-0006 is current.
-- [ ] Exact implementation commit passes the complete CI matrix.
-- [ ] Differential artifact is inspected before closure.
-- [ ] Exact closed-state commit passes CI.
-- [ ] `PROJECT_STATE.md` is current.
-- [ ] `AGENT_HANDOFF.md` is current.
+- [x] One-level nested ordinary block comments are supported.
+- [x] Multi-level nested ordinary block comments are supported.
+- [x] Nested empty and triple-star ordinary comments are supported.
+- [x] Nested outer block-doc forms are counted and skipped inside an ordinary outer comment.
+- [x] Nested inner block-doc forms are counted and skipped inside an ordinary outer comment.
+- [x] Mixed nested block-comment forms are handled correctly.
+- [x] No arbitrary nesting-depth cap is introduced.
+- [x] Scanner is iterative rather than recursively calling itself.
+- [x] Unterminated nested comments fail in a controlled way at the outer opener.
+- [x] UTF-8, CR, and line-marker bytes inside nested bodies are safe.
+- [x] Token spans after nested comments preserve original byte offsets.
+- [x] Top-level outer block doc comments remain unsupported.
+- [x] Top-level inner block doc comments remain unsupported.
+- [x] Existing line comments remain green.
+- [x] Existing non-nested block comments remain green.
+- [x] Existing lexer behavior remains green.
+- [x] Existing `nested-block-comment` differential case becomes `agree_accept`.
+- [x] Added deeper and mixed differential cases classify `agree_accept`.
+- [x] Unterminated nested differential case classifies `agree_reject`.
+- [x] No dependency is added.
+- [x] SEM-LEX-0005 variance is updated.
+- [x] SEM-LEX-0006 is current.
+- [x] Exact implementation commit passes the complete CI matrix.
+- [x] Differential artifact is inspected before closure.
+- [x] Exact closed-state commit passes CI.
+- [x] `PROJECT_STATE.md` is current.
+- [x] `AGENT_HANDOFF.md` is current.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: e3c37407fed0592c1b6f5c71e24ff355d5fa664b
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>
+CI result: success
+Completed: 2026-09-18
+Notes: P1-M003 completed with exact implementation CI and inspected differential evidence.
+
+Evidence:
+
+- Approved plan checkpoint: `5c7cb524c4007e28a997b09d89660d520b51ebe9`.
+- Approved plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419633488>.
+- Final validated implementation head: `e3c37407fed0592c1b6f5c71e24ff355d5fa664b`.
+- Exact successful implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10577216286`.
+- Artifact digest:
+  `sha256:103644d06152b940675780c9bc555061a2b006cf26a0f22197825b92888376c7`.
+- CI rustc identity: `rustc 1.98.1 (48a229cea 2026-09-01)`,
+  host `x86_64-unknown-linux-gnu`.
+- Differential classifications matched: 27/27.
+- Existing `nested-block-comment` changed from the P1-M002 `ferraxis_rejects` gap to
+  `agree_accept`.
+- `nested-block-comment-depth3`, `nested-block-comment-inner-doc`,
+  `nested-block-comment-outer-doc`, and `nested-block-comment-mixed` all classified
+  `agree_accept`.
+- `nested-block-comment-unterminated` classified `agree_reject`.
+- Existing bare-underscore, integer-literal, and Unicode-identifier gaps remained unchanged.
+- Existing unmatched-delimiter and non-nested unterminated-comment observations remained
+  `agree_reject`.
+- Stable code, feature isolation, MSRV 1.85.0, repository workflow, differential evidence, and
+  documentation validation all passed on the exact implementation head.

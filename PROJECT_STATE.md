@@ -13,21 +13,26 @@ Phase 1 — lexer completion.
 
 ## Active milestone
 
-- `P1-M003` — Nested block comments.
-- Active plan: `.plans/P1-M003-nested-block-comments.plan.md`.
-- Plan status: Approved.
-- Implementation status: implemented on the feature branch; exact implementation CI and evidence
-  inspection are still required.
-- Approved plan checkpoint: `5c7cb524c4007e28a997b09d89660d520b51ebe9`.
-- Plan checkpoint CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35419633488>.
+No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
 
 ## Recently completed milestone
+
+- `P1-M003` — Nested block comments.
+- Final validated implementation head: `e3c37407fed0592c1b6f5c71e24ff355d5fa664b`.
+- Exact implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10577216286`.
+- Result: 27/27 committed differential classifications matched.
+- Recursive block-comment nesting is no longer a Ferraxis variance for ordinary top-level block
+  comments.
+
+## Earlier completed Phase 1 milestones
 
 - `P1-M002` — Block comments.
 - Merge commit: `6d6762aacdc0ab371404938c95d2a5832755ab6b`.
 - Post-merge main CI:
   <https://github.com/darkstardevx/ferraxis/actions/runs/35418267654>.
+- `P1-M001` — Line comments.
 
 ## Other open Phase 0 decisions
 
@@ -40,16 +45,12 @@ data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary n
 comments, recursively nested ordinary non-doc block comments, explicit EOF tokens, deterministic
 token dumping, and a versioned differential lexer-observation harness.
 
-## P1-M003 semantic boundary
+Nested ordinary, outer-doc, and inner-doc block forms are tracked recursively when they appear
+inside an ordinary outer block comment. The scanner is iterative and introduces no arbitrary
+nesting-depth cap.
 
-For a top-level ordinary block comment, every nested `/*` increments depth and every `*/`
-decrements it. Nested ordinary, outer-doc, and inner-doc block forms all participate in depth.
-
-The scanner is iterative, uses constant auxiliary memory, introduces no arbitrary nesting cap, and
-anchors unterminated nested-comment failure at the original outer opener.
-
-Top-level block documentation comments remain unsupported because their attribute semantics remain
-out of scope.
+Top-level line and block documentation comments remain unsupported because their attribute
+semantics are still out of scope.
 
 ## Known blockers
 
@@ -58,6 +59,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the exact P1-M003 implementation head to pass the complete CI matrix. Inspect the expanded
-differential artifact, then close P1-M003 only if all recursive and unterminated cases match their
-committed classifications.
+No Rust or Cargo implementation may begin until a new milestone plan is created, reviewed,
+Approved, committed by itself, and validated by CI. The next planned compiler milestone is
+`P1-M004` — punctuation.

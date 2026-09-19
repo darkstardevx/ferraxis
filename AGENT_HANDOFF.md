@@ -2,50 +2,68 @@
 
 ## Repository state
 
-- Active milestone: `P1-M003`.
-- Active plan: `.plans/P1-M003-nested-block-comments.plan.md`.
-- Plan status: `Approved`.
-- Implementation status: recursive nested block comments implemented; exact implementation CI,
-  evidence inspection, and closure remain.
-- Approved plan checkpoint: `5c7cb524c4007e28a997b09d89660d520b51ebe9`.
-- Plan checkpoint CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35419633488>.
+- Active milestone: none.
+- Active plan: none.
+- P1-M003 status: Complete.
+- Final validated P1-M003 implementation head:
+  `e3c37407fed0592c1b6f5c71e24ff355d5fa664b`.
+- P1-M003 implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>.
+- Differential artifact ID: `10577216286`.
+- Differential result: 27/27 committed classifications matched.
 
-## Current work
+## Resume checklist
 
-P1-M003 now uses iterative depth tracking inside top-level ordinary block comments.
+1. Read `PROJECT_SPEC.md`.
+2. Read `PROJECT_STATE.md`.
+3. Read `AGENTS.md`.
+4. Run `./scripts/project-status`.
+5. Confirm there is no active implementation plan before choosing new work.
+6. Read the relevant ADRs and semantic evidence for the next milestone.
+7. Never bypass repository hooks or weaken a gate.
 
-Implemented boundaries awaiting exact CI:
+## Completed work
 
-- every nested `/*` increments depth;
-- every `*/` decrements depth;
-- nested ordinary, outer-doc, and inner-doc forms all participate in depth;
-- scanning resumes only when outer depth reaches zero;
-- EOF with nonzero depth fails at the original outer opener;
-- no arbitrary nesting cap or recursive function call is introduced;
-- top-level block documentation comments remain unsupported;
-- original byte offsets remain authoritative.
+P1-M003 completes recursive nesting inside ordinary Rust block comments.
 
-## Evidence basis
+Validated behavior includes:
 
-Primary authority is the Rust Reference recursive `BLOCK_COMMENT` grammar and
-`BLOCK_COMMENT_OR_DOC` production.
+- one-level and multi-level nesting;
+- nested ordinary block comments;
+- nested outer-doc and inner-doc block forms inside an ordinary outer comment;
+- mixed nested block-comment forms;
+- iterative depth tracking with no arbitrary nesting cap;
+- controlled failure at the original outer opener for unterminated nesting;
+- UTF-8, CR, and line-marker content inside nested bodies;
+- original byte offsets for following tokens;
+- unchanged top-level block documentation-comment rejection.
 
-The existing `nested-block-comment` differential case now expects `agree_accept`. New cases
-cover depth-three, nested outer-doc, nested inner-doc, mixed forms, and unterminated nesting.
+The final differential evidence matched all 27 committed classifications. The previous
+`nested-block-comment` gap now classifies `agree_accept`, deeper and mixed cases also
+`agree_accept`, and unterminated nesting classifies `agree_reject`.
 
 ## Observation boundary
 
 The rustc side remains a stable macro token-tree acceptance probe. It is not a raw rustc lexer
 dump and must not be described as token-for-token equivalence.
 
-## Next exact action
+## Next compiler milestone
 
-Require the implementation head to pass the complete CI matrix, inspect the differential artifact,
-record exact evidence, close P1-M003, and require closed-state CI before merge.
+The next planned compiler milestone is `P1-M004` — punctuation.
+
+Before Rust or Cargo implementation:
+
+1. create a P1-M004 plan;
+2. research Rust punctuation/token boundaries and maximal-munch interactions;
+3. define the token representation changes and compatibility matrix;
+4. define test-first and differential evidence;
+5. approve and commit the plan by itself;
+6. require exact plan-checkpoint CI success;
+7. only then implement punctuation.
+
+P0-M021 licensing remains separate and continues to block release readiness.
 
 ## Validation rule
 
-Nested doc-comment forms inside an ordinary outer block comment are nesting syntax, not top-level
-attributes. Top-level block docs remain unsupported. Differential classifications are evidence,
-not correctness verdicts.
+Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
+Ferraxis's semantic-authority hierarchy.
