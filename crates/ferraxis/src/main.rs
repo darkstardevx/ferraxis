@@ -61,6 +61,9 @@ fn run() -> Result<(), String> {
                     .ok_or_else(|| "internal error: invalid identifier span".to_owned())?;
                 println!("Identifier  {lo}..{hi}  {lexeme:?}");
             }
+            TokenKind::Punctuation(punctuation) => {
+                println!("Punctuation {lo}..{hi}  {:?}", punctuation.as_str());
+            }
             TokenKind::Eof => println!("Eof         {lo}..{hi}"),
         }
     }

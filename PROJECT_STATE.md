@@ -16,7 +16,11 @@ Phase 1 — lexer completion.
 - `P1-M004` — Punctuation.
 - Active plan: `.plans/P1-M004-punctuation.plan.md`.
 - Plan status: Approved.
-- Implementation status: not started; exact plan-only CI must succeed first.
+- Implementation status: implemented on the feature branch; exact implementation CI and evidence
+  inspection remain.
+- Approved plan checkpoint: `d7070206d1cbb8cff04edea49ca688f653259060`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35420536691>.
 
 ## Recently completed milestone
 
@@ -32,23 +36,21 @@ Phase 1 — lexer completion.
 ## Current compiler capability
 
 Ferraxis provides source-file storage, byte positions and half-open spans, structured diagnostic
-data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary non-doc line
-comments, recursively nested ordinary non-doc block comments, explicit EOF tokens, deterministic
-token dumping, and a versioned differential lexer-observation harness.
-
-P1-M004 will add explicit token identity for the 46 non-delimiter punctuation spellings in the
-current Rust Reference.
+data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary non-doc line and
+recursive block comments, explicit non-delimiter punctuation identity, explicit EOF tokens,
+deterministic token dumping, and a versioned differential lexer-observation harness.
 
 ## P1-M004 semantic boundary
 
-- longest valid punctuation spellings win over shorter prefixes;
-- comments retain priority over slash/star punctuation;
-- top-level documentation comments remain unsupported;
-- Rust-2024 multi-pound reserved forms remain rejected;
-- identifier-adjacent pound prefixes remain rejected;
-- valid raw identifiers remain a P1-M011 gap rather than being split;
-- six bracket delimiters remain P1-M005;
-- bare underscore and lifetimes remain outside this milestone.
+Ferraxis recognizes all 46 non-delimiter punctuation spellings in the current Rust Reference using
+longest-first matching.
+
+Comments retain priority over slash/star punctuation. Unsupported top-level doc comments remain
+controlled failures. Rust-2024 multi-pound reserved forms and identifier-adjacent pound prefixes
+remain rejected.
+
+Raw identifiers remain a P1-M011 gap. Bracket delimiters remain P1-M005. Bare underscore and
+lifetimes remain outside P1-M004.
 
 ## Known blockers
 
@@ -57,5 +59,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the Approved P1-M004 plan checkpoint to pass the complete CI matrix. Only after that exact
-green checkpoint may Rust or Cargo implementation begin.
+Require the exact P1-M004 implementation head to pass the complete CI matrix. Inspect uploaded
+differential evidence, then close P1-M004 only if punctuation, reserved-boundary, raw-identifier,
+and delimiter cases match their committed classifications.

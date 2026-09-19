@@ -7,7 +7,7 @@ P1-M004.
 
 ## Status
 
-Planned
+Active
 
 ## Primary authority
 
@@ -26,10 +26,10 @@ L1 — explicit Rust language definition/specification.
 
 ## Ferraxis behavior
 
-P1-M004 will add explicit token identity for every current Reference punctuation spelling except the
+Ferraxis has explicit token identity for every current Reference punctuation spelling except the
 six delimiters owned by P1-M005.
 
-Implemented spellings will be:
+Implemented spellings are:
 
 ```text
 ... ..= <<= >>=
@@ -37,19 +37,22 @@ Implemented spellings will be:
 ! # $ % & * + , - . / : ; < = > ? @ ^ | ~
 ```
 
-Recognition is longest-first.
+Recognition is longest-first through an ordered spelling table. Multi-character punctuation is
+emitted as one Ferraxis lexer token.
 
 Comments retain precedence over slash/star punctuation.
 
 Unsupported top-level documentation comments must remain controlled failures rather than becoming
 punctuation streams.
 
-Rust-2024 reserved multi-pound forms such as `##` must remain rejected. Identifier-adjacent pound
-forms must not be silently split. Valid raw identifiers remain unsupported until P1-M011.
+Rust-2024 reserved multi-pound forms such as `##` are rejected. Identifier-adjacent pound forms
+are rejected before an identifier token is emitted. Valid raw identifiers remain unsupported until
+P1-M011 rather than being split.
 
 ## Token representation
 
-P1-M004 will add a public `Punctuation` enum and `TokenKind::Punctuation(Punctuation)`.
+P1-M004 adds a public `Punctuation` enum, `Punctuation::as_str()`, and
+`TokenKind::Punctuation(Punctuation)`.
 
 The punctuation enum preserves exact lexical identity for downstream parser phases.
 
@@ -69,7 +72,7 @@ production and does not claim proc-macro representation equivalence.
 
 ## Tests
 
-Planned coverage:
+Coverage exists in:
 
 - lexer unit tests for all variants, spans, longest-match overlaps, comments, reserved-pound/prefix
   guards, and deferred token families;
