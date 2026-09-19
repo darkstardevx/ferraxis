@@ -5,6 +5,7 @@ members = [
     "crates/ferraxis-lexer",
     "crates/ferraxis-source",
     "crates/ferraxis-span",
+    "tools/ferraxis-diff",
     "tools/xtask",
 ]
 resolver = "2"

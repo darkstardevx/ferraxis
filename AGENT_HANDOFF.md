@@ -5,7 +5,7 @@
 - Active milestone: `P0-M018`
 - Active plan: `.plans/P0-M018-rustc-differential-lexer.plan.md`
 - Plan status: `Approved`
-- Implementation status: not started
+- Implementation status: differential harness implemented; awaiting exact successful CI evidence
 
 ## Resume checklist
 
@@ -21,8 +21,8 @@
 
 ## Current work
 
-P0-M018 is establishing a reproducible, versioned differential lexer-observation skeleton without
-depending on rustc-private or nightly interfaces.
+P0-M018 now contains the non-publishable `ferraxis-diff` tool, committed lexer corpus and expected
+classifications, deterministic evidence output, and a dedicated CI differential job.
 
 ## Observation boundary
 
@@ -31,9 +31,9 @@ must not be described as token-for-token equivalence.
 
 ## Next exact action
 
-Wait for the plan-only P0-M018 CI checkpoint. If and only if that checkpoint is green, implement
-`tools/ferraxis-diff`, the initial corpus, deterministic evidence output, and the dedicated CI
-differential job.
+Require the implementation head to pass the full PR CI matrix. Inspect the uploaded
+`p0-m018-differential-lexer` artifact. If all jobs are green and the evidence matches the Approved
+plan, record that exact CI run in the plan and close P0-M018.
 
 ## Validation rule
 

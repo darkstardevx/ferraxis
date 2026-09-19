@@ -16,7 +16,7 @@ Phase 0 — compiler foundation.
 - `P0-M018` — Differential lexer harness skeleton.
 - Plan: `.plans/P0-M018-rustc-differential-lexer.plan.md`
 - Plan status: Approved.
-- Implementation status: not started; the Approved plan checkpoint must pass CI first.
+- Implementation status: harness implemented on the feature branch; final CI evidence and closure are still required.
 
 ## Completed workflow milestone
 
@@ -36,8 +36,9 @@ EOF tokens, and deterministic token dumping.
 
 ## Differential-testing boundary
 
-P0-M018 will compare Ferraxis lexer acceptance with a stable rustc macro token-tree acceptance
-probe. It will not claim access to rustc's raw lexer token stream.
+P0-M018 compares Ferraxis lexer acceptance with a stable rustc macro token-tree acceptance
+probe. It does not claim access to rustc's raw lexer token stream. Generated evidence is written
+below `target/differential/lexer/` and uploaded by the dedicated CI differential job.
 
 ## Known blockers
 
@@ -46,5 +47,5 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the P0-M018 Approved-plan commit to pass CI. Only then add the differential harness
-implementation under the unchanged Approved plan.
+Require the P0-M018 implementation head to pass the complete PR CI matrix, including the
+dedicated differential job and MSRV. Only then record exact CI evidence and close P0-M018.

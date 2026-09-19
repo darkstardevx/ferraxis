@@ -1,0 +1,14 @@
+[package]
+name = "ferraxis-diff"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+repository.workspace = true
+publish = false
+
+[dependencies]
+ferraxis-lexer = { path = "../../crates/ferraxis-lexer" }
+ferraxis-source = { path = "../../crates/ferraxis-source" }
+
+[lints]
+workspace = true
