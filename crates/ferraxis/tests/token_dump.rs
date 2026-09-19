@@ -60,10 +60,8 @@ Eof         18..18\n"
 
 #[test]
 fn dumps_delimiters_with_spans_and_spelling() {
-    let path = std::env::temp_dir().join(format!(
-        "ferraxis-delimiter-dump-{}.rs",
-        std::process::id()
-    ));
+    let path =
+        std::env::temp_dir().join(format!("ferraxis-delimiter-dump-{}.rs", std::process::id()));
 
     fs::write(&path, "fn(main)\n").expect("write temporary source");
 
