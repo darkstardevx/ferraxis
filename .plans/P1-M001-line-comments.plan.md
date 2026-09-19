@@ -202,7 +202,7 @@ No Cargo dependency changes are expected.
 | Inner doc comment | `//! docs\nfn` | controlled unsupported-byte failure at first `/` |
 | Token span after comment | `// x\nfn` | `Fn` span begins at original byte offset 5 |
 | Differential line comment | existing corpus case | `agree_accept` |
-| Differential EOF comment | new corpus case | `agree_accept` |
+| Differential newline comment | existing `line-comment` case | `agree_accept` |
 | Differential four-slash comment | new corpus case | `agree_accept` |
 
 ## Implementation sequence
@@ -214,7 +214,7 @@ No Cargo dependency changes are expected.
 4. Implement an explicit helper that distinguishes ordinary line comments from line doc comments.
 5. Skip ordinary comment bytes until LF or EOF.
 6. Preserve current controlled failure for `///` and `//!`.
-7. Update differential corpus expectations and add boundary cases.
+7. Update differential corpus expectations and add representable boundary cases.
 8. Run `./scripts/gate.sh fast`.
 9. Run the differential harness and inspect generated evidence.
 10. Run `./scripts/gate.sh full`.
@@ -222,7 +222,18 @@ No Cargo dependency changes are expected.
 12. Inspect the uploaded differential artifact.
 13. Close P1-M001 only after exact implementation CI evidence is recorded.
 
+## Corpus representation constraint
+
+Tracked text files must end with exactly one LF under `scripts/check-text-files`. Therefore a
+literal `.rsfrag` fixture cannot represent an EOF-terminated line comment without violating
+repository policy.
+
+P1-M001 covers EOF termination directly in lexer unit tests. Differential corpus coverage remains
+for representable newline-terminated and four-slash comment cases. A future generated-case
+mechanism may add exact EOF differential evidence without weakening the tracked-text invariant.
+
 ## Failure modes
+
 
 - Treating all `//` prefixes as ordinary comments and silently discarding doc comments.
 - Incorrectly treating exactly three slashes as an ordinary comment.
@@ -267,7 +278,7 @@ No Cargo dependency changes are expected.
 - [ ] EOF remains exactly one zero-width token at original source length.
 - [ ] Existing lexer behavior remains green.
 - [ ] Differential line-comment evidence changes to `agree_accept`.
-- [ ] Added differential boundary cases match committed expectations.
+- [ ] Added representable differential boundary cases match committed expectations.
 - [ ] No dependency is added.
 - [ ] Relevant semantic evidence is current.
 - [ ] Full local gate passes.
