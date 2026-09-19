@@ -1,6 +1,6 @@
 # Plan: P1-M005 — Delimiters
 
-Status: Approved
+Status: Complete
 Milestone: P1-M005
 Created: 2026-09-18
 
@@ -322,39 +322,70 @@ No Cargo manifest or dependency changes are expected.
 
 ## Acceptance criteria
 
-- [ ] Six explicit delimiter token identities exist.
-- [ ] Every delimiter has exact one-byte source spelling.
-- [ ] `TokenKind::Delimiter(Delimiter)` is public and documented.
-- [ ] `Delimiter::as_str()` returns exact spellings.
-- [ ] All balanced delimiter families tokenize correctly.
-- [ ] Nested balanced delimiters remain a flat token sequence.
-- [ ] Unmatched open delimiters tokenize without lexer balance validation.
-- [ ] Unmatched close delimiters tokenize without lexer balance validation.
-- [ ] Mismatched delimiters tokenize without lexer balance validation.
-- [ ] Pairing/group construction is absent from the lexer.
-- [ ] Punctuation adjacency remains correct.
-- [ ] Comment precedence remains correct.
-- [ ] Delimiter spans preserve original byte offsets.
-- [ ] EOF remains exactly one zero-width token at source length.
-- [ ] CLI token dump renders delimiters deterministically.
-- [ ] Existing lexer behavior remains green.
-- [ ] `paired-delimiters` differential evidence becomes `agree_accept`.
-- [ ] `unmatched-open-delimiter` becomes expected `rustc_rejects` evidence.
-- [ ] Added unmatched-close and mismatched cases classify `rustc_rejects`.
-- [ ] Added balanced delimiter cases classify `agree_accept`.
-- [ ] ADR-0013 is Accepted and registry-current.
-- [ ] SEM-LEX-0008 is current.
-- [ ] No dependency or Cargo change is introduced.
-- [ ] Exact implementation head passes all six CI jobs.
-- [ ] Differential artifact is inspected before closure.
-- [ ] Exact closed-state head passes all six CI jobs.
-- [ ] `PROJECT_STATE.md` is current.
-- [ ] `AGENT_HANDOFF.md` is current.
+- [x] Six explicit delimiter token identities exist.
+- [x] Every delimiter has exact one-byte source spelling.
+- [x] `TokenKind::Delimiter(Delimiter)` is public and documented.
+- [x] `Delimiter::as_str()` returns exact spellings.
+- [x] All balanced delimiter families tokenize correctly.
+- [x] Nested balanced delimiters remain a flat token sequence.
+- [x] Unmatched open delimiters tokenize without lexer balance validation.
+- [x] Unmatched close delimiters tokenize without lexer balance validation.
+- [x] Mismatched delimiters tokenize without lexer balance validation.
+- [x] Pairing/group construction is absent from the lexer.
+- [x] Punctuation adjacency remains correct.
+- [x] Comment precedence remains correct.
+- [x] Delimiter spans preserve original byte offsets.
+- [x] EOF remains exactly one zero-width token at source length.
+- [x] CLI token dump renders delimiters deterministically.
+- [x] Existing lexer behavior remains green.
+- [x] `paired-delimiters` differential evidence becomes `agree_accept`.
+- [x] `unmatched-open-delimiter` becomes expected `rustc_rejects` evidence.
+- [x] Added unmatched-close and mismatched cases classify `rustc_rejects`.
+- [x] Added balanced delimiter cases classify `agree_accept`.
+- [x] ADR-0013 is Accepted and registry-current.
+- [x] SEM-LEX-0008 is current.
+- [x] No dependency or Cargo change is introduced.
+- [x] Exact implementation head passes all six CI jobs.
+- [x] Differential artifact is inspected before closure.
+- [x] Exact closed-state head passes all six CI jobs.
+- [x] `PROJECT_STATE.md` is current.
+- [x] `AGENT_HANDOFF.md` is current.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: 95c8eb93183d12d4665c9031c49d9492d35c3316
+CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35422871724>
+CI result: success
+Completed: 2026-09-18
+Notes: P1-M005 completed with exact implementation CI, differential artifact inspection, and the delimiter/grouping architecture boundary preserved.
+
+Evidence:
+
+- Approved plan checkpoint: `174a6e4c44b9f998d3ff3138fac895c071e22543`.
+- Approved plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35422605365>.
+- Semantic implementation commit: `75277f990b68334b1aa5fcfe0fc04fa62c480aab`.
+- Implementation CI run 35422801222 passed repository workflow, differential evidence, MSRV,
+  documentation, and feature isolation but failed `cargo fmt --check` only.
+- Rustfmt-only repair commit: `95c8eb93183d12d4665c9031c49d9492d35c3316`.
+- Final validated implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35422871724>.
+- Final implementation run passed all six CI jobs.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10578220814`.
+- Artifact digest:
+  `sha256:0613ada5a65f63d86be5cfbb7f68e1f36f2f35cb39ca807696c7d9a2f1624595`.
+- CI rustc identity: `rustc 1.98.1 (48a229cea 2026-09-01)`,
+  host `x86_64-unknown-linux-gnu`.
+- Differential classifications matched: 38/38.
+- `paired-delimiters`, `delimiter-all-balanced`, `delimiter-nested-balanced`, and
+  `delimiter-punctuation-mix` classified `agree_accept`.
+- `unmatched-open-delimiter`, `unmatched-close-delimiter`, and
+  `mismatched-delimiters` classified `rustc_rejects`, exactly as required by ADR-0012 and
+  ADR-0013.
+- rustc stderr was empty for the balanced delimiter cases and non-empty for the three expected
+  unbalanced/mismatched token-tree rejections.
+- Existing known gaps for bare underscore, integer literals, raw identifiers, and Unicode
+  identifiers remained unchanged.
+- No dependency or Cargo manifest change was introduced.
+- ADR-0013 is Accepted and the ADR registry is current through ADR-0013.
+- SEM-LEX-0008 is Active.

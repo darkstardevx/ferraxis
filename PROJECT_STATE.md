@@ -13,22 +13,27 @@ Phase 1 — lexer completion.
 
 ## Active milestone
 
-- `P1-M005` — Delimiters.
-- Active plan: `.plans/P1-M005-delimiters.plan.md`.
-- Plan status: Approved.
-- Implementation status: implemented on the feature branch; exact implementation CI and evidence
-  inspection are still required.
-- Approved plan checkpoint: `174a6e4c44b9f998d3ff3138fac895c071e22543`.
-- Plan checkpoint CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35422605365>.
+No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
 
 ## Recently completed milestone
+
+- `P1-M005` — Delimiters.
+- Final validated implementation head: `95c8eb93183d12d4665c9031c49d9492d35c3316`.
+- Exact implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35422871724>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10578220814`.
+- Result: 38/38 committed differential classifications matched.
+- ADR-0013 permanently assigns delimiter grouping and balance validation after lexing.
+
+## Earlier completed Phase 1 milestones
 
 - `P1-M004` — Punctuation.
 - Main merge: `8af85fa0abb5e055dd0a3c1c2e6f53aa0fff7c2d`.
 - Post-merge main CI:
   <https://github.com/darkstardevx/ferraxis/actions/runs/35422377545>.
-- Result: all six CI jobs passed on the exact merge head.
+- `P1-M003` — Nested block comments.
+- `P1-M002` — Block comments.
+- `P1-M001` — Line comments.
 
 ## Other open Phase 0 decisions
 
@@ -42,32 +47,18 @@ recursively nested ordinary block comments, explicit non-delimiter punctuation i
 delimiter token identities, explicit EOF tokens, deterministic token dumping, and a versioned
 differential lexer-observation harness.
 
-## P1-M005 architecture boundary
+Delimiter tokens preserve exact one-byte spans and remain flat. The lexer does not validate
+matching or construct groups.
 
-ADR-0013 assigns delimiter spelling recognition to the lexer and grouping after lexing.
+## Delimiter observation boundary
 
-The implementation emits open/close parenthesis, square bracket, and brace tokens with exact
-one-byte spans. It does not maintain pairing state, reject mismatched kinds, or construct groups.
+Balanced delimiter sequences agree with the stable rustc macro token-tree probe.
 
-Unmatched and mismatched delimiters therefore remain valid flat lexer results while invalid group
-structure must be rejected by a later frontend layer.
+Unmatched and mismatched delimiters are accepted as flat Ferraxis lexer tokens but rejected by the
+rustc token-tree probe. Their `rustc_rejects` classifications are expected evidence under
+ADR-0012 and ADR-0013, not Ferraxis language extensions.
 
-## Differential boundary
-
-The stable rustc harness uses a macro token-tree probe, so its grouping requirements are stronger
-than the Ferraxis flat lexer boundary.
-
-P1-M005 expects:
-
-- balanced delimiter cases to classify `agree_accept`;
-- unmatched open, unmatched close, and mismatched delimiter cases to classify `rustc_rejects`.
-
-Those classifications are evidence of ADR-0012 and ADR-0013 working together, not language
-extensions.
-
-## Required adjustment completed in the plan checkpoint
-
-The ADR registry was brought current through ADR-0013 before implementation.
+A later frontend stage must validate delimiter pairing before complete Rust source is accepted.
 
 ## Known blockers
 
@@ -76,5 +67,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the exact P1-M005 implementation head to pass all six CI jobs. Inspect and classify any
-failure before changing code. Inspect the uploaded differential artifact before closure.
+No Rust or Cargo implementation may begin until a new milestone plan is created, reviewed,
+Approved, committed by itself, and validated by CI. The next planned compiler milestone is
+`P1-M006` — integer literals.
