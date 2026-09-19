@@ -318,4 +318,3 @@ Evidence:
   fixtures must end with exactly one LF.
 - The exact CI matrix executed every constituent of `scripts/gate.sh full`: stable fast checks,
   feature isolation, MSRV, shell policy, and documentation validation.
-
