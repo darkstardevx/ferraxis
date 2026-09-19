@@ -8,6 +8,9 @@ block-comment-multiline	agree_accept
 block-comment-triple-star	agree_accept
 block-comment-unicode	agree_accept
 block-comment-unterminated	agree_reject
+delimiter-all-balanced	agree_accept
+delimiter-nested-balanced	agree_accept
+delimiter-punctuation-mix	agree_accept
 empty	agree_accept
 fn	agree_accept
 fn-main	agree_accept
@@ -17,13 +20,14 @@ integer	ferraxis_rejects
 line-comment	agree_accept
 line-comment-before-fn	agree_accept
 line-comment-unicode	agree_accept
+mismatched-delimiters	rustc_rejects
 nested-block-comment	agree_accept
 nested-block-comment-depth3	agree_accept
 nested-block-comment-inner-doc	agree_accept
 nested-block-comment-mixed	agree_accept
 nested-block-comment-outer-doc	agree_accept
 nested-block-comment-unterminated	agree_reject
-paired-delimiters	ferraxis_rejects
+paired-delimiters	agree_accept
 punct-all	agree_accept
 punct-comment-mix	agree_accept
 raw-identifier	ferraxis_rejects
@@ -31,4 +35,5 @@ reserved-pound-prefix	agree_reject
 reserved-pounds	agree_reject
 underscore-main	agree_accept
 unicode-ident	ferraxis_rejects
-unmatched-open-delimiter	agree_reject
+unmatched-close-delimiter	rustc_rejects
+unmatched-open-delimiter	rustc_rejects

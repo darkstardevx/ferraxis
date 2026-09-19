@@ -5,8 +5,11 @@
 - Active milestone: `P1-M005`.
 - Active plan: `.plans/P1-M005-delimiters.plan.md`.
 - Plan status: `Approved`.
-- Implementation status: not started.
-- Required checkpoint: exact plan-only CI success across all six jobs before Rust or Cargo changes.
+- Implementation status: six flat delimiter tokens implemented; exact implementation CI,
+  differential artifact inspection, and closure remain.
+- Approved plan checkpoint: `174a6e4c44b9f998d3ff3138fac895c071e22543`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35422605365>.
 
 ## Strict resume checklist
 
@@ -15,49 +18,48 @@
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
 5. Confirm the exact branch head before every mutation.
-6. Inspect existing branch and PR state before creating or resetting anything.
-7. Read the active P1-M005 plan, ADR-0013, SEM-LEX-0008, and ADR-0012.
-8. Confirm exact Approved-plan CI success before implementation.
-9. If CI fails, classify the failure before editing:
-   semantic/test, rustfmt/clippy, generated-content corruption, docs/text policy,
-   workflow/governance, or infrastructure.
-10. Repair forward; never force-reset or weaken a gate.
+6. Read the active P1-M005 plan, ADR-0013, SEM-LEX-0008, and ADR-0012.
+7. If CI fails, classify the failure before editing.
+8. Repair forward; never force-reset or weaken a gate.
 
 ## Current work
 
-P1-M005 will add flat lexical delimiter tokens for:
+P1-M005 now implements flat lexical delimiter tokens for:
 
 - `(` and `)`;
 - `[` and `]`;
 - `{` and `}`.
 
-The lexer will not validate pairing or construct groups.
+The public model is `TokenKind::Delimiter(Delimiter)` with exact spelling returned by
+`Delimiter::as_str()`.
 
 ## Architecture boundary
 
-ADR-0013 places delimiter pairing and group construction after lexing.
+The lexer performs no grouping or balance validation.
 
-Unmatched or mismatched delimiter sequences may therefore be accepted by the flat lexer while the
-stable rustc macro token-tree probe rejects them. Those expected `rustc_rejects` classifications
-are evidence of the observation boundary from ADR-0012, not a request to move grouping into the
-lexer.
+Unmatched and mismatched delimiter sequences lex successfully as flat tokens. Pairing and grouped
+token-tree or parser validation remain later frontend responsibilities under ADR-0013.
 
-## Evidence plan
+## Evidence expectations
 
-P1-M005 will:
+The differential corpus now expects:
 
-- move `paired-delimiters` from `ferraxis_rejects` to `agree_accept`;
-- move `unmatched-open-delimiter` from `agree_reject` to expected `rustc_rejects`;
-- add balanced nested and punctuation-adjacent delimiter cases;
-- add unmatched-close and mismatched delimiter cases expected `rustc_rejects`;
-- add direct unit and CLI tests for exact delimiter token identity and spans.
+- `paired-delimiters`: `agree_accept`;
+- balanced all/nested/punctuation-mix cases: `agree_accept`;
+- `unmatched-open-delimiter`: `rustc_rejects`;
+- `unmatched-close-delimiter`: `rustc_rejects`;
+- `mismatched-delimiters`: `rustc_rejects`.
+
+The `rustc_rejects` results are expected because the stable rustc probe requires balanced macro
+token trees while the Ferraxis lexer emits flat tokens.
 
 ## Next exact action
 
-Require the plan-only head to pass all six CI jobs. Do not begin implementation on a queued,
-in-progress, cancelled, or partially green run.
+Require the implementation head to pass all six CI jobs. Inspect the uploaded differential artifact
+and verify both balanced acceptance and expected unbalanced `rustc_rejects` evidence before
+closing P1-M005.
 
 ## Validation rule
 
-The lexer recognizes delimiter spellings. It does not decide whether those delimiters form valid
-groups. Differential classifications are evidence, not correctness verdicts.
+Do not add delimiter pairing to the lexer to make the rustc token-tree probe agree. Differential
+classifications are evidence, not correctness verdicts.

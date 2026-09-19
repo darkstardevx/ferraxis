@@ -2,8 +2,8 @@
 //!
 //! The current slice recognizes ASCII whitespace, ordinary non-documentation line comments,
 //! recursively nested ordinary non-documentation block comments, the `fn` keyword, an ASCII
-//! identifier subset, non-delimiter punctuation, and EOF. Unsupported source produces structured
-//! lexical errors instead of being guessed.
+//! identifier subset, non-delimiter punctuation, delimiters, and EOF. Unsupported source produces
+//! structured lexical errors instead of being guessed.
 
 use ferraxis_source::SourceFile;
 use ferraxis_span::{BytePos, Span};
@@ -26,6 +26,8 @@ pub enum TokenKind {
     Identifier,
     /// One non-delimiter punctuation token.
     Punctuation(Punctuation),
+    /// One flat delimiter token.
+    Delimiter(Delimiter),
     /// Explicit end-of-file marker used internally by Ferraxis.
     Eof,
 }
@@ -181,6 +183,37 @@ impl Punctuation {
     }
 }
 
+/// One delimiter spelling recognized by the P1-M005 lexer.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum Delimiter {
+    /// The `(` delimiter token.
+    OpenParenthesis,
+    /// The `)` delimiter token.
+    CloseParenthesis,
+    /// The `[` delimiter token.
+    OpenBracket,
+    /// The `]` delimiter token.
+    CloseBracket,
+    /// The `{` delimiter token.
+    OpenBrace,
+    /// The `}` delimiter token.
+    CloseBrace,
+}
+
+impl Delimiter {
+    /// Returns the exact source spelling for this delimiter token.
+    pub const fn as_str(self) -> &'static str {
+        match self {
+            Self::OpenParenthesis => "(",
+            Self::CloseParenthesis => ")",
+            Self::OpenBracket => "[",
+            Self::CloseBracket => "]",
+            Self::OpenBrace => "{",
+            Self::CloseBrace => "}",
+        }
+    }
+}
+
 const PUNCTUATION_SPELLINGS: &[(&str, Punctuation)] = &[
     ("...", Punctuation::Ellipsis),
     ("..=", Punctuation::DotDotEq),
@@ -320,6 +353,16 @@ pub fn lex(source: &SourceFile) -> Result<Vec<Token>, LexError> {
             return Err(unexpected(bytes[cursor], cursor));
         }
 
+        if let Some(delimiter) = delimiter_at(bytes[cursor]) {
+            let start = cursor;
+            cursor += 1;
+            tokens.push(Token {
+                kind: TokenKind::Delimiter(delimiter),
+                span: span(start, cursor),
+            });
+            continue;
+        }
+
         if let Some((punctuation, length)) = punctuation_at(bytes, cursor) {
             let start = cursor;
             cursor += length;
@@ -373,6 +416,18 @@ fn is_comment_prefix(bytes: &[u8], cursor: usize) -> bool {
         (bytes.get(cursor), bytes.get(cursor + 1)),
         (Some(&b'/'), Some(&b'/') | Some(&b'*'))
     )
+}
+
+fn delimiter_at(byte: u8) -> Option<Delimiter> {
+    match byte {
+        b'(' => Some(Delimiter::OpenParenthesis),
+        b')' => Some(Delimiter::CloseParenthesis),
+        b'[' => Some(Delimiter::OpenBracket),
+        b']' => Some(Delimiter::CloseBracket),
+        b'{' => Some(Delimiter::OpenBrace),
+        b'}' => Some(Delimiter::CloseBrace),
+        _ => None,
+    }
 }
 
 fn punctuation_at(bytes: &[u8], cursor: usize) -> Option<(Punctuation, usize)> {
@@ -442,7 +497,7 @@ fn unexpected(byte: u8, offset: usize) -> LexError {
 mod tests {
     use ferraxis_source::SourceFile;
 
-    use super::{LexErrorKind, Punctuation, TokenKind, lex};
+    use super::{Delimiter, LexErrorKind, Punctuation, TokenKind, lex};
 
     fn kinds(input: &str) -> Vec<TokenKind> {
         lex(&SourceFile::new("test.rs", input))
@@ -935,12 +990,113 @@ mod tests {
     }
 
     #[test]
-    fn keeps_delimiters_as_future_gap() {
-        let error = lex(&SourceFile::new("test.rs", "()"))
-            .expect_err("delimiters are reserved for P1-M005");
-        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'('));
-        assert_eq!(error.span.lo().get(), 0);
-        assert_eq!(error.span.hi().get(), 1);
+    fn recognizes_all_delimiter_spellings() {
+        let cases = [
+            ("(", Delimiter::OpenParenthesis),
+            (")", Delimiter::CloseParenthesis),
+            ("[", Delimiter::OpenBracket),
+            ("]", Delimiter::CloseBracket),
+            ("{", Delimiter::OpenBrace),
+            ("}", Delimiter::CloseBrace),
+        ];
+
+        for (spelling, expected) in cases {
+            let source = SourceFile::new("test.rs", spelling);
+            let tokens = lex(&source).expect("delimiter should lex");
+            assert_eq!(expected.as_str(), spelling);
+            assert_eq!(tokens[0].kind, TokenKind::Delimiter(expected));
+            assert_eq!(tokens[0].span.lo().get(), 0);
+            assert_eq!(tokens[0].span.hi().get(), 1);
+            assert_eq!(tokens[1].kind, TokenKind::Eof);
+        }
+    }
+
+    #[test]
+    fn balanced_and_nested_delimiters_stay_flat() {
+        assert_eq!(
+            kinds("({[]})"),
+            vec![
+                TokenKind::Delimiter(Delimiter::OpenParenthesis),
+                TokenKind::Delimiter(Delimiter::OpenBrace),
+                TokenKind::Delimiter(Delimiter::OpenBracket),
+                TokenKind::Delimiter(Delimiter::CloseBracket),
+                TokenKind::Delimiter(Delimiter::CloseBrace),
+                TokenKind::Delimiter(Delimiter::CloseParenthesis),
+                TokenKind::Eof,
+            ]
+        );
+    }
+
+    #[test]
+    fn unmatched_and_mismatched_delimiters_still_lex_flatly() {
+        assert_eq!(
+            kinds("("),
+            vec![
+                TokenKind::Delimiter(Delimiter::OpenParenthesis),
+                TokenKind::Eof,
+            ]
+        );
+        assert_eq!(
+            kinds(")"),
+            vec![
+                TokenKind::Delimiter(Delimiter::CloseParenthesis),
+                TokenKind::Eof,
+            ]
+        );
+        assert_eq!(
+            kinds("(]"),
+            vec![
+                TokenKind::Delimiter(Delimiter::OpenParenthesis),
+                TokenKind::Delimiter(Delimiter::CloseBracket),
+                TokenKind::Eof,
+            ]
+        );
+    }
+
+    #[test]
+    fn delimiters_coexist_with_punctuation_and_comments() {
+        assert_eq!(
+            kinds("(->) [/* comment */] {+}"),
+            vec![
+                TokenKind::Delimiter(Delimiter::OpenParenthesis),
+                TokenKind::Punctuation(Punctuation::ThinArrow),
+                TokenKind::Delimiter(Delimiter::CloseParenthesis),
+                TokenKind::Delimiter(Delimiter::OpenBracket),
+                TokenKind::Delimiter(Delimiter::CloseBracket),
+                TokenKind::Delimiter(Delimiter::OpenBrace),
+                TokenKind::Punctuation(Punctuation::Plus),
+                TokenKind::Delimiter(Delimiter::CloseBrace),
+                TokenKind::Eof,
+            ]
+        );
+    }
+
+    #[test]
+    fn preserves_delimiter_spans_between_tokens() {
+        let source = SourceFile::new("test.rs", "fn(main)");
+        let tokens = lex(&source).expect("supported delimiters should lex");
+
+        assert_eq!(tokens[0].kind, TokenKind::Fn);
+        assert_eq!(tokens[0].span.lo().get(), 0);
+        assert_eq!(tokens[0].span.hi().get(), 2);
+        assert_eq!(
+            tokens[1].kind,
+            TokenKind::Delimiter(Delimiter::OpenParenthesis)
+        );
+        assert_eq!(tokens[1].span.lo().get(), 2);
+        assert_eq!(tokens[1].span.hi().get(), 3);
+        assert_eq!(tokens[2].kind, TokenKind::Identifier);
+        assert_eq!(tokens[2].span.lo().get(), 3);
+        assert_eq!(tokens[2].span.hi().get(), 7);
+        assert_eq!(
+            tokens[3].kind,
+            TokenKind::Delimiter(Delimiter::CloseParenthesis)
+        );
+        assert_eq!(tokens[3].span.lo().get(), 7);
+        assert_eq!(tokens[3].span.hi().get(), 8);
+        assert_eq!(tokens[4].kind, TokenKind::Eof);
+        assert_eq!(tokens[4].span.lo().get(), 8);
+        assert_eq!(tokens[4].span.hi().get(), 8);
     }
 
     #[test]
@@ -977,11 +1133,5 @@ mod tests {
     fn rejects_bare_underscore_for_now() {
         let error = lex(&SourceFile::new("test.rs", "_")).expect_err("underscore is unsupported");
         assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'_'));
-    }
-
-    #[test]
-    fn rejects_delimiter_for_now() {
-        let error = lex(&SourceFile::new("test.rs", "(")).expect_err("delimiter is unsupported");
-        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'('));
     }
 }

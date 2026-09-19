@@ -16,7 +16,11 @@ Phase 1 — lexer completion.
 - `P1-M005` — Delimiters.
 - Active plan: `.plans/P1-M005-delimiters.plan.md`.
 - Plan status: Approved.
-- Implementation status: not started; exact plan-only CI must succeed first.
+- Implementation status: implemented on the feature branch; exact implementation CI and evidence
+  inspection are still required.
+- Approved plan checkpoint: `174a6e4c44b9f998d3ff3138fac895c071e22543`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35422605365>.
 
 ## Recently completed milestone
 
@@ -34,27 +38,36 @@ Phase 1 — lexer completion.
 
 Ferraxis provides source-file storage, byte positions and half-open spans, structured diagnostic
 data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary line comments,
-recursively nested ordinary block comments, explicit non-delimiter punctuation identity, explicit
-EOF tokens, deterministic token dumping, and a versioned differential lexer-observation harness.
-
-P1-M005 will add six explicit flat delimiter token identities.
+recursively nested ordinary block comments, explicit non-delimiter punctuation identity, six flat
+delimiter token identities, explicit EOF tokens, deterministic token dumping, and a versioned
+differential lexer-observation harness.
 
 ## P1-M005 architecture boundary
 
-ADR-0013 assigns only delimiter spelling recognition to the lexer.
+ADR-0013 assigns delimiter spelling recognition to the lexer and grouping after lexing.
 
-The lexer will emit open/close parenthesis, square bracket, and brace tokens without maintaining a
-pairing stack. Group construction and unmatched/mismatched delimiter validation belong to a later
-frontend layer.
+The implementation emits open/close parenthesis, square bracket, and brace tokens with exact
+one-byte spans. It does not maintain pairing state, reject mismatched kinds, or construct groups.
 
-Because the stable rustc differential harness uses a macro token-tree probe, unmatched or mismatched
-delimiter cases are expected to become `rustc_rejects` observations after P1-M005 rather than lexer
-rejections.
+Unmatched and mismatched delimiters therefore remain valid flat lexer results while invalid group
+structure must be rejected by a later frontend layer.
 
-## Required adjustment
+## Differential boundary
 
-The ADR registry previously stopped at ADR-0009 even though ADR-0010 through ADR-0012 existed.
-P1-M005's plan checkpoint brings that registry current and adds ADR-0013.
+The stable rustc harness uses a macro token-tree probe, so its grouping requirements are stronger
+than the Ferraxis flat lexer boundary.
+
+P1-M005 expects:
+
+- balanced delimiter cases to classify `agree_accept`;
+- unmatched open, unmatched close, and mismatched delimiter cases to classify `rustc_rejects`.
+
+Those classifications are evidence of ADR-0012 and ADR-0013 working together, not language
+extensions.
+
+## Required adjustment completed in the plan checkpoint
+
+The ADR registry was brought current through ADR-0013 before implementation.
 
 ## Known blockers
 
@@ -63,6 +76,5 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the exact Approved P1-M005 plan checkpoint to pass all six CI jobs. Inspect and classify any
-failure before making a repair. Only after that exact green checkpoint may Rust or Cargo
-implementation begin.
+Require the exact P1-M005 implementation head to pass all six CI jobs. Inspect and classify any
+failure before changing code. Inspect the uploaded differential artifact before closure.

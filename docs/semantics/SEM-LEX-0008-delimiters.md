@@ -6,7 +6,7 @@ Flat lexical recognition of Rust parentheses, square brackets, and braces.
 
 ## Status
 
-Planned
+Active
 
 ## Primary authority
 
@@ -21,7 +21,7 @@ L1 — explicit Rust language definition/specification.
 
 ## Ferraxis behavior
 
-P1-M005 will emit six explicit flat delimiter token identities:
+Ferraxis emits six explicit flat delimiter token identities:
 
 - `(` — open parenthesis;
 - `)` — close parenthesis;
@@ -42,7 +42,7 @@ after P1-M005.
 
 ## Tests
 
-Planned coverage includes:
+Coverage exists in:
 
 - unit tests in `crates/ferraxis-lexer/src/lib.rs`;
 - token-dump integration tests;
