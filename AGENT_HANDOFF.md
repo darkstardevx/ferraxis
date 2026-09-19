@@ -2,11 +2,11 @@
 
 ## Repository state
 
-- Active milestone: none.
-- Active plan: none.
-- P0-M018 status: Complete.
-- Final validated P0-M018 head: `dc9b792c42e1fe111ea60c88358ec8c2f9d9038a`.
-- P0-M018 CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35415625792>.
+- Active milestone: `P1-M001`.
+- Active plan: `.plans/P1-M001-line-comments.plan.md`.
+- Plan status: `Approved`.
+- Implementation status: not started.
+- Required checkpoint: complete green CI for the plan-only commit before Rust/Cargo changes.
 
 ## Resume checklist
 
@@ -14,40 +14,39 @@
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Confirm there is no active implementation plan before choosing new work.
-6. Read the relevant ADRs and semantic evidence for the next milestone.
-7. Never bypass repository hooks or weaken a gate to make a change pass.
+5. Read the active P1-M001 plan.
+6. Read `SEM-LEX-0004`.
+7. Read ADR-0001, ADR-0003, ADR-0006, ADR-0011, and ADR-0012.
+8. Confirm the Approved-plan commit passed CI before changing Rust or Cargo implementation.
+9. Never bypass repository hooks or weaken a gate.
 
-## Completed work
+## Current work
 
-P0-M018 established the non-publishable `ferraxis-diff` tool, committed lexer corpus and expected
-classifications, deterministic evidence output, and a dedicated CI differential job.
+P1-M001 will add ordinary Rust non-documentation line comments to the lexer.
 
-The final artifact contained all expected evidence. Eleven of eleven committed classifications
-matched. Only the unmatched-open-delimiter probe emitted rustc stderr, and that result remains
-explicitly scoped as token-tree evidence.
+The semantic boundary is intentionally narrow:
 
-## Observation boundary
+- ordinary `//...` comments are whitespace;
+- EOF and LF termination are supported;
+- `////...` is ordinary comment syntax;
+- `///...` remains unsupported outer documentation-comment syntax;
+- `//!...` remains unsupported inner documentation-comment syntax.
 
-The rustc side is a stable macro token-tree acceptance probe. It is not a raw rustc lexer dump and
-must not be described as token-for-token equivalence.
+## Evidence basis
 
-## Next compiler milestone
+Primary authority is the Rust Reference comments grammar. The P0-M018 differential harness will be
+used as additional L4 evidence after implementation.
 
-The next planned compiler milestone is `P1-M001` — line comments.
+The existing `line-comment` differential case should move from `ferraxis_rejects` to
+`agree_accept` once implementation lands.
 
-Before Rust or Cargo implementation:
+## Next exact action
 
-1. create a P1-M001 plan with `./scripts/plan new P1-M001 line-comments`;
-2. complete its design, evidence, compatibility, and test-first sections;
-3. approve it with `./scripts/plan approve`;
-4. commit the Approved plan by itself;
-5. require that plan checkpoint to pass CI;
-6. only then implement line-comment lexing.
-
-P0-M021 licensing remains separate and continues to block release readiness.
+Require the plan-only head to pass the full CI matrix. If it is green, implement P1-M001 inside the
+approved file boundary, update differential expectations, inspect evidence, and close only after
+exact implementation CI success.
 
 ## Validation rule
 
-Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
-Ferraxis's semantic-authority hierarchy.
+Do not collapse documentation comments into ordinary comments. Differential classifications are
+evidence, not correctness verdicts.

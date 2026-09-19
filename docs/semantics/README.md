@@ -42,3 +42,4 @@ not yet implemented.
 | SEM-LEX-0001 | Active | Initial identifier lexical grammar |
 | SEM-LEX-0002 | Active | Exact `fn` keyword boundary |
 | SEM-LEX-0003 | Active | EOF token and zero-width terminal span |
+| SEM-LEX-0004 | Planned | Non-doc line comments |
