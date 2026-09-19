@@ -28,3 +28,7 @@ Consequences, and References sections.
 | ADR-0007 | Accepted | Compiler panic and ICE policy |
 | ADR-0008 | Accepted | Dependency-minimization policy |
 | ADR-0009 | Accepted | Documentation is a validated build artifact |
+| ADR-0010 | Accepted | Plan-first agent workflow |
+| ADR-0011 | Accepted | Toolchain and reproducible validation |
+| ADR-0012 | Accepted | Stable rustc token-tree observation boundary |
+| ADR-0013 | Accepted | Flat delimiter lexing; grouping after lexing |

@@ -2,72 +2,62 @@
 
 ## Repository state
 
-- Active milestone: none.
-- Active plan: none.
-- P1-M004 status: Complete.
-- Final validated P1-M004 implementation head:
-  `7baa2974e1fbc109399ccc91e94d9802489d6b7e`.
-- P1-M004 implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35420906959>.
-- Differential artifact ID: `10577067943`.
-- Differential result: 33/33 committed classifications matched.
+- Active milestone: `P1-M005`.
+- Active plan: `.plans/P1-M005-delimiters.plan.md`.
+- Plan status: `Approved`.
+- Implementation status: not started.
+- Required checkpoint: exact plan-only CI success across all six jobs before Rust or Cargo changes.
 
-## Resume checklist
+## Strict resume checklist
 
 1. Read `PROJECT_SPEC.md`.
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Confirm there is no active implementation plan before choosing new work.
-6. Read the relevant ADRs and semantic evidence for the next milestone.
-7. Never bypass repository hooks or weaken a gate.
+5. Confirm the exact branch head before every mutation.
+6. Inspect existing branch and PR state before creating or resetting anything.
+7. Read the active P1-M005 plan, ADR-0013, SEM-LEX-0008, and ADR-0012.
+8. Confirm exact Approved-plan CI success before implementation.
+9. If CI fails, classify the failure before editing:
+   semantic/test, rustfmt/clippy, generated-content corruption, docs/text policy,
+   workflow/governance, or infrastructure.
+10. Repair forward; never force-reset or weaken a gate.
 
-## Completed work
+## Current work
 
-P1-M004 implements all 46 current non-delimiter Rust Reference punctuation spellings.
+P1-M005 will add flat lexical delimiter tokens for:
 
-Validated behavior includes:
+- `(` and `)`;
+- `[` and `]`;
+- `{` and `}`.
 
-- one explicit `Punctuation` variant per spelling;
-- stable `Punctuation::as_str()` mappings;
-- `TokenKind::Punctuation(Punctuation)`;
-- longest-first recognition across all overlapping punctuation families;
-- comments retaining priority over slash/star punctuation;
-- unsupported documentation comments remaining controlled failures;
-- Rust-2024 multi-pound reserved forms remaining rejected;
-- identifier-adjacent pound prefixes remaining rejected;
-- raw identifiers remaining visibly unsupported until P1-M011;
-- matched delimiters remaining visibly unsupported until P1-M005;
-- deterministic punctuation token-dump output with exact byte spans.
+The lexer will not validate pairing or construct groups.
 
-The implementation required a repair after CI exposed generated-source corruption around the
-dollar-sign enum documentation entry. The final repaired head passed all six CI jobs. Differential
-evidence matched all 33 committed classifications.
+## Architecture boundary
 
-## Observation boundary
+ADR-0013 places delimiter pairing and group construction after lexing.
 
-The stable rustc macro token-tree probe establishes acceptance evidence only. Multi-character
-punctuation identity and longest-match boundaries are grounded in the Rust Reference and Ferraxis
-unit tests, not inferred from the token-tree probe.
+Unmatched or mismatched delimiter sequences may therefore be accepted by the flat lexer while the
+stable rustc macro token-tree probe rejects them. Those expected `rustc_rejects` classifications
+are evidence of the observation boundary from ADR-0012, not a request to move grouping into the
+lexer.
 
-## Next compiler milestone
+## Evidence plan
 
-The next planned compiler milestone is `P1-M005` — delimiters.
+P1-M005 will:
 
-Before Rust or Cargo implementation:
+- move `paired-delimiters` from `ferraxis_rejects` to `agree_accept`;
+- move `unmatched-open-delimiter` from `agree_reject` to expected `rustc_rejects`;
+- add balanced nested and punctuation-adjacent delimiter cases;
+- add unmatched-close and mismatched delimiter cases expected `rustc_rejects`;
+- add direct unit and CLI tests for exact delimiter token identity and spans.
 
-1. create a P1-M005 plan;
-2. define delimiter token identity and whether pairing/group structure belongs in lexer output or a
-   later token-tree layer;
-3. preserve unmatched-delimiter controlled failure semantics appropriately;
-4. define unit, CLI, and differential evidence;
-5. approve and commit the plan by itself;
-6. require exact plan-checkpoint CI success;
-7. only then implement delimiters.
+## Next exact action
 
-P0-M021 licensing remains separate and continues to block release readiness.
+Require the plan-only head to pass all six CI jobs. Do not begin implementation on a queued,
+in-progress, cancelled, or partially green run.
 
 ## Validation rule
 
-Do not let delimiter work absorb parser grouping or macro token-tree semantics without an explicit
-architecture decision. Differential classifications are evidence, not correctness verdicts.
+The lexer recognizes delimiter spellings. It does not decide whether those delimiters form valid
+groups. Differential classifications are evidence, not correctness verdicts.
