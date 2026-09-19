@@ -13,18 +13,21 @@ Phase 0 — compiler foundation.
 
 ## Active milestone
 
-No implementation milestone is active. P0-M022 is complete and awaiting merge of its closure
-record.
+No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
+
+## Recently completed milestone
+
+- `P0-M018` — Differential lexer harness skeleton.
+- Final validated head: `dc9b792c42e1fe111ea60c88358ec8c2f9d9038a`.
+- CI evidence: <https://github.com/darkstardevx/ferraxis/actions/runs/35415625792>.
+- Differential artifact: `p0-m018-differential-lexer`.
+- Result: 11/11 committed classifications matched.
 
 ## Completed workflow milestone
 
 - `P0-M022` — Agent workflow completion.
-- Implementation head: `93397095be100be722e4bf48c0fc00a159f143b8`
-- Verified CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
-
-## Next compiler milestone
-
-- `P0-M018` — Differential lexer harness skeleton.
+- Main merge: `4804cc98f13374845d926603680974d6552a2232`.
+- Main merge CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406658633>.
 
 ## Other open Phase 0 decisions
 
@@ -34,13 +37,16 @@ record.
 
 Ferraxis currently provides source-file storage, byte positions and half-open spans, structured
 diagnostic data, initial ASCII whitespace and identifier lexing, exact `fn` recognition, explicit
-EOF tokens, and deterministic token dumping.
+EOF tokens, deterministic token dumping, and a versioned differential lexer-observation harness.
 
-## Workflow state
+## Differential-testing boundary
 
-The Rust-agent workflow is now repository-enforced: plan-first commits, repository hooks, tiered
-gates, state/handoff records, stable plus MSRV validation, feature isolation, exact CI evidence,
-shell validation, and release-readiness helpers are present.
+P0-M018 compares Ferraxis lexer acceptance with a stable rustc macro token-tree acceptance probe.
+It does not claim access to rustc's raw lexer token stream or token-for-token equivalence.
+
+The final P0-M018 CI evidence used rustc 1.98.1 on `x86_64-unknown-linux-gnu`. All 11 committed
+classifications matched. Generated evidence remains under `target/differential/lexer/` during
+runs and is uploaded by the dedicated CI differential job.
 
 ## Known blockers
 
@@ -49,6 +55,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Merge PR #1 only after the P0-M022 closure commit itself passes CI. Then synchronize local
-`main`, install repository hooks with `./scripts/setup-dev`, and open P0-M018 with a new Draft
-plan that is reviewed, Approved, and committed before implementation begins.
+No implementation may begin until a new milestone plan is created, reviewed, Approved, and
+committed. The next planned compiler milestone is `P1-M001` — line comments. P0-M021 licensing
+remains a separate Phase 0 release-governance decision.

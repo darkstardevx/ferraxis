@@ -1,0 +1,12 @@
+# case	expected
+ascii-digit-tail	agree_accept
+bare-underscore	ferraxis_rejects
+empty	agree_accept
+fn	agree_accept
+fn-main	agree_accept
+fnn	agree_accept
+integer	ferraxis_rejects
+line-comment	ferraxis_rejects
+underscore-main	agree_accept
+unicode-ident	ferraxis_rejects
+unmatched-open-delimiter	agree_reject

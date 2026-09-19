@@ -2,11 +2,11 @@
 
 ## Repository state
 
-- Completed milestone: `P0-M022`
-- Active milestone: none
-- Active plan: none
-- Next compiler milestone: `P0-M018`
-- Verified P0-M022 implementation CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35406400983>
+- Active milestone: none.
+- Active plan: none.
+- P0-M018 status: Complete.
+- Final validated P0-M018 head: `dc9b792c42e1fe111ea60c88358ec8c2f9d9038a`.
+- P0-M018 CI: <https://github.com/darkstardevx/ferraxis/actions/runs/35415625792>.
 
 ## Resume checklist
 
@@ -14,30 +14,40 @@
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Confirm there is no stale `.plans/ACTIVE`.
-6. Read ADR-0006 before differential-testing work.
-7. Create the P0-M018 plan before changing Rust implementation.
-8. Never bypass repository hooks.
+5. Confirm there is no active implementation plan before choosing new work.
+6. Read the relevant ADRs and semantic evidence for the next milestone.
+7. Never bypass repository hooks or weaken a gate to make a change pass.
 
 ## Completed work
 
-P0-M022 made Ferraxis compiler-governance complete and agent-workflow complete. The final verified
-implementation head passed stable code, feature-isolation, MSRV 1.85.0, repository workflow, and
-documentation gates.
+P0-M018 established the non-publishable `ferraxis-diff` tool, committed lexer corpus and expected
+classifications, deterministic evidence output, and a dedicated CI differential job.
 
-## Next exact action
+The final artifact contained all expected evidence. Eleven of eleven committed classifications
+matched. Only the unmatched-open-delimiter probe emitted rustc stderr, and that result remains
+explicitly scoped as token-tree evidence.
 
-After PR #1 merges and `main` CI is green, create a dedicated P0-M018 branch and run:
+## Observation boundary
 
-```bash
-./scripts/plan new P0-M018 rustc-differential-lexer
-```
+The rustc side is a stable macro token-tree acceptance probe. It is not a raw rustc lexer dump and
+must not be described as token-for-token equivalence.
 
-Fill the plan with the differential-evidence contract, corpus boundary, version capture, result
-classification, failure modes, and tests. Approve and commit that plan before implementing the
-harness.
+## Next compiler milestone
+
+The next planned compiler milestone is `P1-M001` — line comments.
+
+Before Rust or Cargo implementation:
+
+1. create a P1-M001 plan with `./scripts/plan new P1-M001 line-comments`;
+2. complete its design, evidence, compatibility, and test-first sections;
+3. approve it with `./scripts/plan approve`;
+4. commit the Approved plan by itself;
+5. require that plan checkpoint to pass CI;
+6. only then implement line-comment lexing.
+
+P0-M021 licensing remains separate and continues to block release readiness.
 
 ## Validation rule
 
-Do not claim P0-M018 progress from prototype code alone. Differential observations must be
-reproducible, versioned, and interpreted through Ferraxis's semantic-authority hierarchy.
+Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
+Ferraxis's semantic-authority hierarchy.

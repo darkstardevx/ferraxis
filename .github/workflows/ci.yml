@@ -100,6 +100,27 @@ jobs:
       - name: Workflow records
         run: cargo run -p xtask --locked -- validate-docs
 
+  differential:
+    name: P0-M018 differential lexer
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Rust stable
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run differential lexer harness
+        run: cargo run -p ferraxis-diff --locked -- lexer
+
+      - name: Upload differential evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: p0-m018-differential-lexer
+          path: target/differential/lexer/
+          if-no-files-found: error
+
   docs:
     name: Documentation gate
     runs-on: ubuntu-latest

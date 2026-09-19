@@ -26,7 +26,7 @@ Status values are `planned`, `active`, `complete`, `blocked`, `split`, and `supe
 | P0-M015 | complete | ASCII identifiers | Initial identifier subset and keyword boundaries are tested. |
 | P0-M016 | complete | Token-dump CLI | `--emit=tokens` emits deterministic token information. |
 | P0-M017 | complete | Lexer regression tests | Boundary, span, whitespace, and unsupported-byte tests exist. |
-| P0-M018 | planned | Differential lexer harness skeleton | Harness can record versioned rustc observations. |
+| P0-M018 | complete | Differential lexer harness skeleton | Harness can record versioned rustc observations. |
 | P0-M019 | complete | Documentation gate baseline | Rustdoc, structure validation, Markdown lint, and link checks exist. |
 | P0-M020 | complete | Release metadata baseline | Pre-1.0 release ladder and release criteria are documented. |
 | P0-M021 | planned | Licensing decision | Project license is selected and committed explicitly. |
