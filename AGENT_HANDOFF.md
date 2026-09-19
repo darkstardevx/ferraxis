@@ -2,15 +2,11 @@
 
 ## Repository state
 
-- Active milestone: none.
-- Active plan: none.
-- P1-M002 status: Complete.
-- Final validated P1-M002 implementation head:
-  `92ea27771b195f341da9062ca871eddb131e7363`.
-- P1-M002 implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
-- Differential artifact ID: `10576662999`.
-- Differential result: 22/22 committed classifications matched.
+- Active milestone: `P1-M003`.
+- Active plan: `.plans/P1-M003-nested-block-comments.plan.md`.
+- Plan status: `Approved`.
+- Implementation status: not started.
+- Required checkpoint: exact plan-only CI success before Rust or Cargo changes.
 
 ## Resume checklist
 
@@ -18,51 +14,48 @@
 2. Read `PROJECT_STATE.md`.
 3. Read `AGENTS.md`.
 4. Run `./scripts/project-status`.
-5. Confirm there is no active implementation plan before choosing new work.
-6. Read the relevant ADRs and semantic evidence for the next milestone.
-7. Never bypass repository hooks or weaken a gate.
+5. Read the active P1-M003 plan.
+6. Read `SEM-LEX-0005` and `SEM-LEX-0006`.
+7. Read ADR-0001, ADR-0003, ADR-0006, ADR-0011, and ADR-0012.
+8. Confirm exact Approved-plan CI success before implementation.
+9. Never bypass repository hooks or weaken a gate.
 
-## Completed work
+## Current work
 
-P1-M002 implements depth-one ordinary Rust non-documentation block comments as lexical whitespace.
+P1-M003 will implement recursive nesting inside ordinary Rust block comments.
 
-Validated behavior includes:
+Frozen boundaries:
 
-- basic, inline, multiline, UTF-8, line-marker, and bare-CR comment bodies;
-- `/**/` as an ordinary empty block comment;
-- `/***/` and `/*** text */` as ordinary block comments;
-- outer `/** text */` block documentation comments remaining unsupported;
-- inner `/*! text */` block documentation comments remaining unsupported;
-- controlled failure for EOF before `*/`;
-- controlled failure at a nested `/*` opener until P1-M003;
-- original byte offsets for tokens following comments.
+- the scanner uses an iterative depth counter;
+- nested ordinary `/* ... */` contributes to depth;
+- nested `/** ... */` and `/*! ... */` forms also contribute to depth when already inside an
+  ordinary outer comment;
+- top-level block documentation comments remain unsupported;
+- EOF before depth returns to zero is a controlled failure at the outer opener;
+- no arbitrary nesting cap is introduced;
+- original byte offsets remain authoritative.
 
-Differential evidence matched all 22 committed classifications. Supported block-comment cases
-classified `agree_accept`, unterminated input classified `agree_reject`, and the nested case
-remained `ferraxis_rejects` exactly as planned.
+## Evidence basis
+
+Primary authority is the Rust Reference recursive `BLOCK_COMMENT` grammar and
+`BLOCK_COMMENT_OR_DOC` production.
+
+The existing `nested-block-comment` differential case must move from `ferraxis_rejects` to
+`agree_accept`. New cases will cover deeper and mixed nesting plus unterminated nested input.
 
 ## Observation boundary
 
 The rustc side remains a stable macro token-tree acceptance probe. It is not a raw rustc lexer
 dump and must not be described as token-for-token equivalence.
 
-## Next compiler milestone
+## Next exact action
 
-The next planned compiler milestone is `P1-M003` — nested block comments.
-
-Before Rust or Cargo implementation:
-
-1. create a P1-M003 plan;
-2. research recursive nesting across ordinary, outer-doc, and inner-doc block-comment forms;
-3. define the depth algorithm and overflow/resource behavior;
-4. define unit and differential evidence for multiple nesting depths;
-5. approve and commit the plan by itself;
-6. require exact plan-checkpoint CI success;
-7. only then implement recursive nesting.
-
-P0-M021 licensing remains separate and continues to block release readiness.
+Require the plan-only head to pass the complete CI matrix. If green, implement iterative nesting,
+inspect the expanded differential artifact, close P1-M003, and require closed-state CI before
+merge.
 
 ## Validation rule
 
-Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
-Ferraxis's semantic-authority hierarchy.
+Nested doc-comment forms inside an ordinary outer block comment are nesting syntax, not top-level
+attributes. Top-level block docs remain unsupported. Differential classifications are evidence,
+not correctness verdicts.

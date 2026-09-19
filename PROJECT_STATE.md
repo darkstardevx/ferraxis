@@ -13,24 +13,17 @@ Phase 1 — lexer completion.
 
 ## Active milestone
 
-No implementation milestone is currently active and `.plans/ACTIVE` is intentionally absent.
+- `P1-M003` — Nested block comments.
+- Active plan: `.plans/P1-M003-nested-block-comments.plan.md`.
+- Plan status: Approved.
+- Implementation status: not started; exact plan-only CI must succeed first.
 
 ## Recently completed milestone
 
 - `P1-M002` — Block comments.
-- Final validated implementation head: `92ea27771b195f341da9062ca871eddb131e7363`.
-- Exact implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
-- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10576662999`.
-- Result: 22/22 committed differential classifications matched.
-- Intentional remaining lexer gap: nested block comments are reserved for `P1-M003`.
-
-## Earlier completed Phase 1 milestone
-
-- `P1-M001` — Line comments.
-- Merge commit: `cc28d3265d6cc18af520593226158016b5423990`.
+- Merge commit: `6d6762aacdc0ab371404938c95d2a5832755ab6b`.
 - Post-merge main CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35417271818>.
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35418267654>.
 
 ## Other open Phase 0 decisions
 
@@ -43,12 +36,17 @@ data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary n
 comments, depth-one ordinary non-doc block comments, explicit EOF tokens, deterministic token
 dumping, and a versioned differential lexer-observation harness.
 
-Supported block comments include multiline, UTF-8, `/**/`, `/***/`, and `/*** text */`
-forms. Outer `/** text */` and inner `/*! text */` block documentation comments remain
-unsupported.
+P1-M003 will close the temporary nested-block-comment variance using iterative depth tracking.
 
-Unterminated block comments fail in a controlled way. Nested `/*` fails at the nested opener
-until P1-M003 implements recursive nesting.
+## P1-M003 semantic boundary
+
+For a top-level ordinary block comment, every nested `/*` increments comment depth and every `*/`
+decrements it. Nested ordinary, outer-doc, and inner-doc block forms all participate in depth.
+
+Top-level block documentation comments remain unsupported because their attribute semantics remain
+out of scope.
+
+No arbitrary nesting limit is planned. The scanner remains iterative and linear in source length.
 
 ## Known blockers
 
@@ -57,6 +55,5 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-No Rust or Cargo implementation may begin until a new milestone plan is created, reviewed,
-Approved, committed by itself, and validated by CI. The next planned compiler milestone is
-`P1-M003` — nested block comments.
+Require the Approved P1-M003 plan checkpoint to pass the complete CI matrix. Only after that exact
+green checkpoint may Rust or Cargo implementation begin.
