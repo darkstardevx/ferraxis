@@ -30,9 +30,9 @@ The implemented documentation-comment boundary is:
 - `/** text */` is outer block documentation syntax and remains unsupported;
 - `/*! text */` and `/*!! text */` are inner block documentation syntax and remain unsupported.
 
-Rust's full `BLOCK_COMMENT` grammar is recursive. P1-M002 does not claim recursive support. If a
-nested `/*` opener appears before the outer `*/`, Ferraxis fails in a controlled way at that nested
-opener. P1-M003 owns recursive nesting.
+P1-M002 established depth-one ordinary block comments. P1-M003 extends the same ordinary-comment
+boundary with recursive nesting, so nested ordinary, outer-doc, and inner-doc block forms are now
+tracked until the outer ordinary comment closes.
 
 EOF before the closing `*/` is a controlled lexical failure at the original opening slash.
 
@@ -48,13 +48,12 @@ Coverage exists in:
 - versioned differential cases under `tests/differential/lexer/`.
 
 The differential suite includes supported comments, an unterminated comment expected to
-`agree_reject`, and a nested comment expected to remain `ferraxis_rejects` until P1-M003.
+`agree_reject`, and recursive nested-comment coverage maintained by SEM-LEX-0006.
 
 ## Variance
 
 Temporary variance from Rust:
 
-- recursive nested block comments are unsupported until P1-M003;
-- outer and inner block documentation comments remain unsupported.
+- top-level outer and inner block documentation comments remain unsupported.
 
 These are explicit missing-language subsets, not Ferraxis language extensions.

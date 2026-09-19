@@ -17,20 +17,22 @@ No implementation milestone is currently active and `.plans/ACTIVE` is intention
 
 ## Recently completed milestone
 
-- `P1-M002` — Block comments.
-- Final validated implementation head: `92ea27771b195f341da9062ca871eddb131e7363`.
+- `P1-M003` — Nested block comments.
+- Final validated implementation head: `e3c37407fed0592c1b6f5c71e24ff355d5fa664b`.
 - Exact implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
-- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10576662999`.
-- Result: 22/22 committed differential classifications matched.
-- Intentional remaining lexer gap: nested block comments are reserved for `P1-M003`.
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>.
+- Differential artifact: `p0-m018-differential-lexer`, artifact ID `10577216286`.
+- Result: 27/27 committed differential classifications matched.
+- Recursive block-comment nesting is no longer a Ferraxis variance for ordinary top-level block
+  comments.
 
-## Earlier completed Phase 1 milestone
+## Earlier completed Phase 1 milestones
 
-- `P1-M001` — Line comments.
-- Merge commit: `cc28d3265d6cc18af520593226158016b5423990`.
+- `P1-M002` — Block comments.
+- Merge commit: `6d6762aacdc0ab371404938c95d2a5832755ab6b`.
 - Post-merge main CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35417271818>.
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35418267654>.
+- `P1-M001` — Line comments.
 
 ## Other open Phase 0 decisions
 
@@ -40,15 +42,15 @@ No implementation milestone is currently active and `.plans/ACTIVE` is intention
 
 Ferraxis provides source-file storage, byte positions and half-open spans, structured diagnostic
 data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary non-doc line
-comments, depth-one ordinary non-doc block comments, explicit EOF tokens, deterministic token
-dumping, and a versioned differential lexer-observation harness.
+comments, recursively nested ordinary non-doc block comments, explicit EOF tokens, deterministic
+token dumping, and a versioned differential lexer-observation harness.
 
-Supported block comments include multiline, UTF-8, `/**/`, `/***/`, and `/*** text */`
-forms. Outer `/** text */` and inner `/*! text */` block documentation comments remain
-unsupported.
+Nested ordinary, outer-doc, and inner-doc block forms are tracked recursively when they appear
+inside an ordinary outer block comment. The scanner is iterative and introduces no arbitrary
+nesting-depth cap.
 
-Unterminated block comments fail in a controlled way. Nested `/*` fails at the nested opener
-until P1-M003 implements recursive nesting.
+Top-level line and block documentation comments remain unsupported because their attribute
+semantics are still out of scope.
 
 ## Known blockers
 
@@ -59,4 +61,4 @@ and package metadata is release-ready.
 
 No Rust or Cargo implementation may begin until a new milestone plan is created, reviewed,
 Approved, committed by itself, and validated by CI. The next planned compiler milestone is
-`P1-M003` — nested block comments.
+`P1-M004` — punctuation.

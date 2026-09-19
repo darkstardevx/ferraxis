@@ -4,13 +4,13 @@
 
 - Active milestone: none.
 - Active plan: none.
-- P1-M002 status: Complete.
-- Final validated P1-M002 implementation head:
-  `92ea27771b195f341da9062ca871eddb131e7363`.
-- P1-M002 implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35418129218>.
-- Differential artifact ID: `10576662999`.
-- Differential result: 22/22 committed classifications matched.
+- P1-M003 status: Complete.
+- Final validated P1-M003 implementation head:
+  `e3c37407fed0592c1b6f5c71e24ff355d5fa664b`.
+- P1-M003 implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>.
+- Differential artifact ID: `10577216286`.
+- Differential result: 27/27 committed classifications matched.
 
 ## Resume checklist
 
@@ -24,22 +24,23 @@
 
 ## Completed work
 
-P1-M002 implements depth-one ordinary Rust non-documentation block comments as lexical whitespace.
+P1-M003 completes recursive nesting inside ordinary Rust block comments.
 
 Validated behavior includes:
 
-- basic, inline, multiline, UTF-8, line-marker, and bare-CR comment bodies;
-- `/**/` as an ordinary empty block comment;
-- `/***/` and `/*** text */` as ordinary block comments;
-- outer `/** text */` block documentation comments remaining unsupported;
-- inner `/*! text */` block documentation comments remaining unsupported;
-- controlled failure for EOF before `*/`;
-- controlled failure at a nested `/*` opener until P1-M003;
-- original byte offsets for tokens following comments.
+- one-level and multi-level nesting;
+- nested ordinary block comments;
+- nested outer-doc and inner-doc block forms inside an ordinary outer comment;
+- mixed nested block-comment forms;
+- iterative depth tracking with no arbitrary nesting cap;
+- controlled failure at the original outer opener for unterminated nesting;
+- UTF-8, CR, and line-marker content inside nested bodies;
+- original byte offsets for following tokens;
+- unchanged top-level block documentation-comment rejection.
 
-Differential evidence matched all 22 committed classifications. Supported block-comment cases
-classified `agree_accept`, unterminated input classified `agree_reject`, and the nested case
-remained `ferraxis_rejects` exactly as planned.
+The final differential evidence matched all 27 committed classifications. The previous
+`nested-block-comment` gap now classifies `agree_accept`, deeper and mixed cases also
+`agree_accept`, and unterminated nesting classifies `agree_reject`.
 
 ## Observation boundary
 
@@ -48,17 +49,17 @@ dump and must not be described as token-for-token equivalence.
 
 ## Next compiler milestone
 
-The next planned compiler milestone is `P1-M003` — nested block comments.
+The next planned compiler milestone is `P1-M004` — punctuation.
 
 Before Rust or Cargo implementation:
 
-1. create a P1-M003 plan;
-2. research recursive nesting across ordinary, outer-doc, and inner-doc block-comment forms;
-3. define the depth algorithm and overflow/resource behavior;
-4. define unit and differential evidence for multiple nesting depths;
+1. create a P1-M004 plan;
+2. research Rust punctuation/token boundaries and maximal-munch interactions;
+3. define the token representation changes and compatibility matrix;
+4. define test-first and differential evidence;
 5. approve and commit the plan by itself;
 6. require exact plan-checkpoint CI success;
-7. only then implement recursive nesting.
+7. only then implement punctuation.
 
 P0-M021 licensing remains separate and continues to block release readiness.
 

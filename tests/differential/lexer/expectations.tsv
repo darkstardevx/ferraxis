@@ -17,7 +17,12 @@ integer	ferraxis_rejects
 line-comment	agree_accept
 line-comment-before-fn	agree_accept
 line-comment-unicode	agree_accept
-nested-block-comment	ferraxis_rejects
+nested-block-comment	agree_accept
+nested-block-comment-depth3	agree_accept
+nested-block-comment-inner-doc	agree_accept
+nested-block-comment-mixed	agree_accept
+nested-block-comment-outer-doc	agree_accept
+nested-block-comment-unterminated	agree_reject
 underscore-main	agree_accept
 unicode-ident	ferraxis_rejects
 unmatched-open-delimiter	agree_reject
