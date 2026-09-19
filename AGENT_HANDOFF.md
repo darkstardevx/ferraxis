@@ -4,13 +4,13 @@
 
 - Active milestone: none.
 - Active plan: none.
-- P1-M003 status: Complete.
-- Final validated P1-M003 implementation head:
-  `e3c37407fed0592c1b6f5c71e24ff355d5fa664b`.
-- P1-M003 implementation CI:
-  <https://github.com/darkstardevx/ferraxis/actions/runs/35419741904>.
-- Differential artifact ID: `10577216286`.
-- Differential result: 27/27 committed classifications matched.
+- P1-M004 status: Complete.
+- Final validated P1-M004 implementation head:
+  `7baa2974e1fbc109399ccc91e94d9802489d6b7e`.
+- P1-M004 implementation CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35420906959>.
+- Differential artifact ID: `10577067943`.
+- Differential result: 33/33 committed classifications matched.
 
 ## Resume checklist
 
@@ -24,46 +24,50 @@
 
 ## Completed work
 
-P1-M003 completes recursive nesting inside ordinary Rust block comments.
+P1-M004 implements all 46 current non-delimiter Rust Reference punctuation spellings.
 
 Validated behavior includes:
 
-- one-level and multi-level nesting;
-- nested ordinary block comments;
-- nested outer-doc and inner-doc block forms inside an ordinary outer comment;
-- mixed nested block-comment forms;
-- iterative depth tracking with no arbitrary nesting cap;
-- controlled failure at the original outer opener for unterminated nesting;
-- UTF-8, CR, and line-marker content inside nested bodies;
-- original byte offsets for following tokens;
-- unchanged top-level block documentation-comment rejection.
+- one explicit `Punctuation` variant per spelling;
+- stable `Punctuation::as_str()` mappings;
+- `TokenKind::Punctuation(Punctuation)`;
+- longest-first recognition across all overlapping punctuation families;
+- comments retaining priority over slash/star punctuation;
+- unsupported documentation comments remaining controlled failures;
+- Rust-2024 multi-pound reserved forms remaining rejected;
+- identifier-adjacent pound prefixes remaining rejected;
+- raw identifiers remaining visibly unsupported until P1-M011;
+- matched delimiters remaining visibly unsupported until P1-M005;
+- deterministic punctuation token-dump output with exact byte spans.
 
-The final differential evidence matched all 27 committed classifications. The previous
-`nested-block-comment` gap now classifies `agree_accept`, deeper and mixed cases also
-`agree_accept`, and unterminated nesting classifies `agree_reject`.
+The implementation required a repair after CI exposed generated-source corruption around the
+dollar-sign enum documentation entry. The final repaired head passed all six CI jobs. Differential
+evidence matched all 33 committed classifications.
 
 ## Observation boundary
 
-The rustc side remains a stable macro token-tree acceptance probe. It is not a raw rustc lexer
-dump and must not be described as token-for-token equivalence.
+The stable rustc macro token-tree probe establishes acceptance evidence only. Multi-character
+punctuation identity and longest-match boundaries are grounded in the Rust Reference and Ferraxis
+unit tests, not inferred from the token-tree probe.
 
 ## Next compiler milestone
 
-The next planned compiler milestone is `P1-M004` — punctuation.
+The next planned compiler milestone is `P1-M005` — delimiters.
 
 Before Rust or Cargo implementation:
 
-1. create a P1-M004 plan;
-2. research Rust punctuation/token boundaries and maximal-munch interactions;
-3. define the token representation changes and compatibility matrix;
-4. define test-first and differential evidence;
+1. create a P1-M005 plan;
+2. define delimiter token identity and whether pairing/group structure belongs in lexer output or a
+   later token-tree layer;
+3. preserve unmatched-delimiter controlled failure semantics appropriately;
+4. define unit, CLI, and differential evidence;
 5. approve and commit the plan by itself;
 6. require exact plan-checkpoint CI success;
-7. only then implement punctuation.
+7. only then implement delimiters.
 
 P0-M021 licensing remains separate and continues to block release readiness.
 
 ## Validation rule
 
-Differential classifications are evidence, not correctness verdicts. Interpret mismatches through
-Ferraxis's semantic-authority hierarchy.
+Do not let delimiter work absorb parser grouping or macro token-tree semantics without an explicit
+architecture decision. Differential classifications are evidence, not correctness verdicts.

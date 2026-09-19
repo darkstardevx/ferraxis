@@ -23,6 +23,12 @@ nested-block-comment-inner-doc	agree_accept
 nested-block-comment-mixed	agree_accept
 nested-block-comment-outer-doc	agree_accept
 nested-block-comment-unterminated	agree_reject
+paired-delimiters	ferraxis_rejects
+punct-all	agree_accept
+punct-comment-mix	agree_accept
+raw-identifier	ferraxis_rejects
+reserved-pound-prefix	agree_reject
+reserved-pounds	agree_reject
 underscore-main	agree_accept
 unicode-ident	ferraxis_rejects
 unmatched-open-delimiter	agree_reject

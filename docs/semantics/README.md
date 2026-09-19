@@ -43,5 +43,6 @@ not yet implemented.
 | SEM-LEX-0002 | Active | Exact `fn` keyword boundary |
 | SEM-LEX-0003 | Active | EOF token and zero-width terminal span |
 | SEM-LEX-0004 | Active | Non-doc line comments |
-| SEM-LEX-0005 | Active | Non-nested non-doc block comments |
+| SEM-LEX-0005 | Active | Non-doc block comments |
 | SEM-LEX-0006 | Active | Recursive nested block comments |
+| SEM-LEX-0007 | Active | Punctuation tokenization |
