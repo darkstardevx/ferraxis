@@ -5,8 +5,11 @@
 - Active milestone: `P1-M002`.
 - Active plan: `.plans/P1-M002-block-comments.plan.md`.
 - Plan status: `Approved`.
-- Implementation status: not started.
-- Required checkpoint: exact plan-only CI success before Rust or Cargo changes.
+- Implementation status: depth-one ordinary block comments implemented; exact implementation CI,
+  evidence inspection, and closure remain.
+- Approved plan checkpoint: `0ce202345327701705763364da3dc3859a55a376`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417983279>.
 
 ## Resume checklist
 
@@ -17,30 +20,30 @@
 5. Read the active P1-M002 plan.
 6. Read `SEM-LEX-0005`.
 7. Read ADR-0001, ADR-0003, ADR-0006, ADR-0011, and ADR-0012.
-8. Confirm the exact Approved-plan checkpoint passed CI before implementation.
-9. Never bypass repository hooks or weaken a gate.
+8. Never bypass repository hooks or weaken a gate.
 
 ## Current work
 
-P1-M002 will implement the non-nested subset of ordinary Rust block comments.
+P1-M002 now implements the non-nested subset of ordinary Rust block comments.
 
-Important frozen boundaries:
+Validated-by-code boundaries awaiting exact CI:
 
-- `/* ... */` ordinary comments become whitespace;
-- `/**/` is an ordinary empty block comment;
-- `/***/` and `/*** text */` are ordinary comments;
+- `/* ... */` ordinary comments are skipped as whitespace;
+- multiline, UTF-8, line-marker, and bare-CR bodies are supported;
+- `/**/`, `/***/`, and `/*** text */` are ordinary comments;
 - `/** text */` remains unsupported outer block documentation syntax;
 - `/*! text */` remains unsupported inner block documentation syntax;
-- nested `/*` inside an open block comment is rejected at the nested opener until P1-M003;
-- EOF before `*/` is a controlled lexical failure.
+- EOF before `*/` fails at the opening slash;
+- nested `/*` fails at the nested opener until P1-M003;
+- token spans after comments retain original byte offsets.
 
 ## Evidence basis
 
-Primary authority is the Rust Reference comments grammar. The differential harness supplies
-additional L4 observation evidence.
+Primary authority is the Rust Reference comments grammar. The differential harness supplies L4
+observation evidence.
 
-P1-M002 will add supported block-comment cases, an unterminated case expected to `agree_reject`,
-and an intentional nested-comment case expected to remain `ferraxis_rejects` until P1-M003.
+The expanded corpus expects supported block comments to `agree_accept`, an unterminated block
+comment to `agree_reject`, and nested block comments to remain `ferraxis_rejects` until P1-M003.
 
 ## Observation boundary
 
@@ -49,12 +52,10 @@ dump and must not be described as token-for-token equivalence.
 
 ## Next exact action
 
-Require the plan-only head to pass the complete CI matrix. If green, implement only the approved
-depth-one block-comment scope, inspect differential evidence, close P1-M002, and merge only after
-closed-state CI succeeds.
+Require the implementation head to pass the complete CI matrix, inspect the differential artifact,
+record exact evidence, close P1-M002, and require closed-state CI before merge.
 
 ## Validation rule
 
-Do not collapse block documentation comments into ordinary comments. Do not accidentally truncate
-nested comments at an inner `*/`. Differential classifications are evidence, not correctness
-verdicts.
+Do not collapse block documentation comments into ordinary comments. Do not truncate nested input
+at the inner `*/`. Differential classifications are evidence, not correctness verdicts.

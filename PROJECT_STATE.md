@@ -16,7 +16,11 @@ Phase 1 — lexer completion.
 - `P1-M002` — Block comments.
 - Active plan: `.plans/P1-M002-block-comments.plan.md`.
 - Plan status: Approved.
-- Implementation status: not started; exact plan-only CI must succeed first.
+- Implementation status: implemented on the feature branch; exact implementation CI and evidence
+  inspection are still required.
+- Approved plan checkpoint: `0ce202345327701705763364da3dc3859a55a376`.
+- Plan checkpoint CI:
+  <https://github.com/darkstardevx/ferraxis/actions/runs/35417983279>.
 
 ## Recently completed milestone
 
@@ -33,23 +37,18 @@ Phase 1 — lexer completion.
 
 Ferraxis provides source-file storage, byte positions and half-open spans, structured diagnostic
 data, ASCII whitespace and identifier lexing, exact `fn` recognition, ordinary non-doc line
-comments, explicit EOF tokens, deterministic token dumping, and a versioned differential
-lexer-observation harness.
-
-P1-M002 will add depth-one ordinary non-doc block comments. Recursive nested block comments remain
-P1-M003. Block documentation comments remain explicitly unsupported.
+comments, depth-one ordinary non-doc block comments, explicit EOF tokens, deterministic token
+dumping, and a versioned differential lexer-observation harness.
 
 ## P1-M002 semantic boundary
 
-The Rust Reference treats non-doc block comments as whitespace and supports nesting.
+Supported depth-one ordinary block comments are lexical whitespace.
 
-P1-M002 intentionally implements only non-nested ordinary comments:
+The implementation correctly treats `/**/`, `/***/`, and `/*** text */` as ordinary comments while
+leaving `/** text */` and `/*! text */` block documentation syntax unsupported.
 
-- `/**/` and `/***/` are ordinary block comments;
-- `/** text */` is outer block documentation syntax and remains unsupported;
-- `/*! text */` is inner block documentation syntax and remains unsupported;
-- nested `/*` inside an open block comment is a controlled temporary rejection until P1-M003;
-- unterminated block comments are controlled lexical failures.
+Unterminated comments fail at the original opening slash. Nested `/*` fails at the nested opener
+until P1-M003 implements recursive nesting.
 
 ## Known blockers
 
@@ -58,5 +57,6 @@ and package metadata is release-ready.
 
 ## Next exact action
 
-Require the Approved P1-M002 plan checkpoint to pass the complete CI matrix. Only after that exact
-green checkpoint may Rust or Cargo implementation begin.
+Require the exact P1-M002 implementation head to pass the complete CI matrix. Inspect uploaded
+differential evidence, then close P1-M002 only if supported, unterminated, and nested cases match
+their committed classifications.

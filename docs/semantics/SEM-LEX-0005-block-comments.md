@@ -6,7 +6,7 @@ Recognition and treatment of the P1-M002 non-nested subset of Rust ordinary bloc
 
 ## Status
 
-Planned
+Active
 
 ## Primary authority
 
@@ -20,9 +20,9 @@ L1 — explicit Rust language definition/specification.
 
 ## Ferraxis behavior
 
-P1-M002 will treat supported depth-one ordinary `/* ... */` comments as lexical whitespace.
+Ferraxis treats supported depth-one ordinary `/* ... */` comments as lexical whitespace.
 
-The milestone preserves the Rust documentation-comment boundary:
+The implemented documentation-comment boundary is:
 
 - `/**/` is an ordinary empty block comment;
 - `/***/` is an ordinary block comment;
@@ -31,22 +31,24 @@ The milestone preserves the Rust documentation-comment boundary:
 - `/*! text */` and `/*!! text */` are inner block documentation syntax and remain unsupported.
 
 Rust's full `BLOCK_COMMENT` grammar is recursive. P1-M002 does not claim recursive support. If a
-nested `/*` opener appears before the outer `*/`, Ferraxis will fail in a controlled way at that
-nested opener. P1-M003 owns recursive nesting.
+nested `/*` opener appears before the outer `*/`, Ferraxis fails in a controlled way at that nested
+opener. P1-M003 owns recursive nesting.
 
-EOF before the closing `*/` is a controlled lexical failure.
+EOF before the closing `*/` is a controlled lexical failure at the original opening slash.
 
-Ferraxis source spans continue to use original UTF-8 byte offsets. P1-M002 does not add a general
-input-normalization layer.
+Supported ordinary block-comment bodies may span lines and contain UTF-8 bytes, line-comment
+markers, and bare CR. Ferraxis source spans continue to use original UTF-8 byte offsets. P1-M002
+does not add a general input-normalization layer.
 
 ## Tests
 
-Planned coverage:
+Coverage exists in:
 
 - unit tests in `crates/ferraxis-lexer/src/lib.rs`;
 - versioned differential cases under `tests/differential/lexer/`.
 
-The differential suite must include both supported comments and the intentional nested-comment gap.
+The differential suite includes supported comments, an unterminated comment expected to
+`agree_reject`, and a nested comment expected to remain `ferraxis_rejects` until P1-M003.
 
 ## Variance
 

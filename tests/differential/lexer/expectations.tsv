@@ -1,6 +1,13 @@
 # case	expected
 ascii-digit-tail	agree_accept
 bare-underscore	ferraxis_rejects
+block-comment	agree_accept
+block-comment-before-fn	agree_accept
+block-comment-empty	agree_accept
+block-comment-multiline	agree_accept
+block-comment-triple-star	agree_accept
+block-comment-unicode	agree_accept
+block-comment-unterminated	agree_reject
 empty	agree_accept
 fn	agree_accept
 fn-main	agree_accept
@@ -10,6 +17,7 @@ integer	ferraxis_rejects
 line-comment	agree_accept
 line-comment-before-fn	agree_accept
 line-comment-unicode	agree_accept
+nested-block-comment	ferraxis_rejects
 underscore-main	agree_accept
 unicode-ident	ferraxis_rejects
 unmatched-open-delimiter	agree_reject

@@ -1,8 +1,8 @@
 //! The Ferraxis lexer.
 //!
 //! The current slice recognizes ASCII whitespace, ordinary non-documentation line comments,
-//! the `fn` keyword, an ASCII identifier subset, and EOF. Unsupported source produces
-//! structured lexical errors instead of being guessed.
+//! non-nested ordinary non-documentation block comments, the `fn` keyword, an ASCII identifier
+//! subset, and EOF. Unsupported source produces structured lexical errors instead of being guessed.
 
 use ferraxis_source::SourceFile;
 use ferraxis_span::{BytePos, Span};
@@ -47,13 +47,14 @@ pub enum LexErrorKind {
 
 /// Tokenizes one source file using the currently supported lexical subset.
 ///
-/// Ordinary non-documentation line comments are treated as whitespace. Line documentation
-/// comments remain unsupported until their attribute semantics are implemented.
+/// Ordinary non-documentation line comments and non-nested ordinary block comments are treated as
+/// whitespace. Documentation comments and nested block comments remain unsupported until their
+/// dedicated milestones.
 ///
 /// # Errors
 ///
-/// Returns [`LexError`] for unsupported source bytes or files too large for the current byte
-/// position representation.
+/// Returns [`LexError`] for unsupported source bytes, unsupported nested block comments,
+/// unterminated block comments, or files too large for the current byte position representation.
 pub fn lex(source: &SourceFile) -> Result<Vec<Token>, LexError> {
     let bytes = source.text().as_bytes();
     let source_len = source.byte_len().ok_or(LexError {
@@ -75,6 +76,30 @@ pub fn lex(source: &SourceFile) -> Result<Vec<Token>, LexError> {
             while cursor < bytes.len() && bytes[cursor] != b'\n' {
                 cursor += 1;
             }
+            continue;
+        }
+
+        if is_non_doc_block_comment_start(bytes, cursor) {
+            let start = cursor;
+            cursor += 2;
+
+            loop {
+                if cursor >= bytes.len() {
+                    return Err(unexpected(bytes[start], start));
+                }
+
+                if bytes.get(cursor) == Some(&b'/') && bytes.get(cursor + 1) == Some(&b'*') {
+                    return Err(unexpected(bytes[cursor], cursor));
+                }
+
+                if bytes.get(cursor) == Some(&b'*') && bytes.get(cursor + 1) == Some(&b'/') {
+                    cursor += 2;
+                    break;
+                }
+
+                cursor += 1;
+            }
+
             continue;
         }
 
@@ -121,6 +146,18 @@ fn is_non_doc_line_comment_start(bytes: &[u8], cursor: usize) -> bool {
     match bytes.get(cursor + 2) {
         Some(&b'!') => false,
         Some(&b'/') => bytes.get(cursor + 3) == Some(&b'/'),
+        _ => true,
+    }
+}
+
+fn is_non_doc_block_comment_start(bytes: &[u8], cursor: usize) -> bool {
+    if bytes.get(cursor) != Some(&b'/') || bytes.get(cursor + 1) != Some(&b'*') {
+        return false;
+    }
+
+    match bytes.get(cursor + 2) {
+        Some(&b'!') => false,
+        Some(&b'*') => matches!(bytes.get(cursor + 3), Some(&b'*') | Some(&b'/')),
         _ => true,
     }
 }
@@ -281,6 +318,129 @@ mod tests {
     }
 
     #[test]
+    fn skips_basic_block_comment() {
+        assert_eq!(kinds("/* comment */"), vec![TokenKind::Eof]);
+    }
+
+    #[test]
+    fn skips_inline_block_comment() {
+        assert_eq!(
+            kinds("fn/* comment */main"),
+            vec![TokenKind::Fn, TokenKind::Identifier, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn skips_multiline_block_comment() {
+        assert_eq!(
+            kinds("/* first\nsecond */fn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn skips_empty_block_comment() {
+        assert_eq!(kinds("/**/fn"), vec![TokenKind::Fn, TokenKind::Eof]);
+    }
+
+    #[test]
+    fn skips_triple_star_block_comment() {
+        assert_eq!(kinds("/***/fn"), vec![TokenKind::Fn, TokenKind::Eof]);
+    }
+
+    #[test]
+    fn skips_longer_star_block_comment() {
+        assert_eq!(
+            kinds("/*** ordinary */fn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn skips_unicode_block_comment_body() {
+        assert_eq!(
+            kinds("/* café */fn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn line_comment_marker_is_text_inside_block_comment() {
+        assert_eq!(
+            kinds("/* // still block text */fn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn bare_cr_is_text_inside_block_comment() {
+        assert_eq!(
+            kinds("/* a\rb */fn"),
+            vec![TokenKind::Fn, TokenKind::Eof]
+        );
+    }
+
+    #[test]
+    fn rejects_outer_block_doc_comment_for_now() {
+        let error = lex(&SourceFile::new("test.rs", "/** docs */fn"))
+            .expect_err("outer block doc comment unsupported");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 0);
+        assert_eq!(error.span.hi().get(), 1);
+    }
+
+    #[test]
+    fn rejects_inner_block_doc_comment_for_now() {
+        let error = lex(&SourceFile::new("test.rs", "/*! docs */fn"))
+            .expect_err("inner block doc comment unsupported");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 0);
+        assert_eq!(error.span.hi().get(), 1);
+    }
+
+    #[test]
+    fn rejects_inner_block_doc_comment_with_extra_bang_for_now() {
+        let error = lex(&SourceFile::new("test.rs", "/*!! docs */fn"))
+            .expect_err("inner block doc comment unsupported");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 0);
+        assert_eq!(error.span.hi().get(), 1);
+    }
+
+    #[test]
+    fn rejects_unterminated_block_comment() {
+        let error = lex(&SourceFile::new("test.rs", "/* comment"))
+            .expect_err("unterminated block comment should fail");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 0);
+        assert_eq!(error.span.hi().get(), 1);
+    }
+
+    #[test]
+    fn rejects_nested_block_comment_at_nested_opener() {
+        let error = lex(&SourceFile::new(
+            "test.rs",
+            "/* outer /* inner */ outer */",
+        ))
+        .expect_err("nested block comment is reserved for P1-M003");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 9);
+        assert_eq!(error.span.hi().get(), 10);
+    }
+
+    #[test]
+    fn rejects_nested_block_doc_comment_at_nested_opener() {
+        let error = lex(&SourceFile::new(
+            "test.rs",
+            "/* outer /** inner */ outer */",
+        ))
+        .expect_err("nested block doc comment is reserved for P1-M003");
+        assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'/'));
+        assert_eq!(error.span.lo().get(), 9);
+        assert_eq!(error.span.hi().get(), 10);
+    }
+
+    #[test]
     fn preserves_token_spans() {
         let source = SourceFile::new("test.rs", "fn main");
         let tokens = lex(&source).expect("input should lex");
@@ -302,6 +462,18 @@ mod tests {
         assert_eq!(tokens[1].kind, TokenKind::Eof);
         assert_eq!(tokens[1].span.lo().get(), 7);
         assert_eq!(tokens[1].span.hi().get(), 7);
+    }
+
+    #[test]
+    fn preserves_token_spans_after_block_comment() {
+        let source = SourceFile::new("test.rs", "/* x */fn");
+        let tokens = lex(&source).expect("block comment followed by token should lex");
+        assert_eq!(tokens[0].kind, TokenKind::Fn);
+        assert_eq!(tokens[0].span.lo().get(), 7);
+        assert_eq!(tokens[0].span.hi().get(), 9);
+        assert_eq!(tokens[1].kind, TokenKind::Eof);
+        assert_eq!(tokens[1].span.lo().get(), 9);
+        assert_eq!(tokens[1].span.hi().get(), 9);
     }
 
     #[test]
