@@ -936,8 +936,8 @@ mod tests {
 
     #[test]
     fn keeps_delimiters_as_future_gap() {
-        let error =
-            lex(&SourceFile::new("test.rs", "()")).expect_err("delimiters are reserved for P1-M005");
+        let error = lex(&SourceFile::new("test.rs", "()"))
+            .expect_err("delimiters are reserved for P1-M005");
         assert_eq!(error.kind, LexErrorKind::UnexpectedByte(b'('));
         assert_eq!(error.span.lo().get(), 0);
         assert_eq!(error.span.hi().get(), 1);
