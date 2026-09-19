@@ -1,6 +1,6 @@
 # Plan: P0-M018 — Stable rustc differential lexer harness skeleton
 
-Status: Approved
+Status: Complete
 Milestone: P0-M018
 Created: 2026-09-18
 
@@ -216,23 +216,36 @@ The unmatched-delimiter case is explicitly token-tree evidence, not proof of a r
 
 ## Acceptance criteria
 
-- [ ] Stable rustc raw lexer internals are not required.
-- [ ] No nightly or rustc-private dependency is introduced.
-- [ ] Exact `rustc --version --verbose` evidence is recorded.
-- [ ] Corpus execution is deterministic.
-- [ ] Both agreement and known Ferraxis-gap classifications are represented.
-- [ ] Expected classifications are committed and checked.
-- [ ] Generated probe source and rustc stderr are preserved under `target/`.
-- [ ] Human-readable and machine-readable result summaries are emitted.
-- [ ] CI runs the harness on stable Rust.
-- [ ] CI uploads differential evidence for inspection.
-- [ ] Existing stable, feature-isolation, MSRV, workflow, and docs gates remain green.
-- [ ] Exact implementation CI evidence is recorded before closure.
+- [x] Stable rustc raw lexer internals are not required.
+- [x] No nightly or rustc-private dependency is introduced.
+- [x] Exact `rustc --version --verbose` evidence is recorded.
+- [x] Corpus execution is deterministic.
+- [x] Both agreement and known Ferraxis-gap classifications are represented.
+- [x] Expected classifications are committed and checked.
+- [x] Generated probe source and rustc stderr are preserved under `target/`.
+- [x] Human-readable and machine-readable result summaries are emitted.
+- [x] CI runs the harness on stable Rust.
+- [x] CI uploads differential evidence for inspection.
+- [x] Existing stable, feature-isolation, MSRV, workflow, and docs gates remain green.
+- [x] Exact implementation CI evidence is recorded before closure.
 
 ## Completion record
 
-Implementation commit:
-CI run:
-CI result:
-Completed:
-Notes:
+Implementation commit: dc9b792c42e1fe111ea60c88358ec8c2f9d9038a
+CI run: https://github.com/darkstardevx/ferraxis/actions/runs/35415625792
+CI result: success
+Completed: 2026-09-18
+Notes: 11/11 committed classifications matched; final evidence artifact inspected.
+
+Evidence:
+- Approved-plan checkpoint head: `72caa6023b2879f23eaabeb037aa684d793a1f83`.
+- Harness implementation commit: `1e65997b1ae80b2deb560a1774c678e7109d9e1c`.
+- Final validated head: `dc9b792c42e1fe111ea60c88358ec8c2f9d9038a`.
+- Final CI run: <https://github.com/darkstardevx/ferraxis/actions/runs/35415625792>.
+- Artifact: `p0-m018-differential-lexer`, GitHub artifact ID `10575304463`.
+- Artifact digest:
+  `sha256:4bd6cc5a32d9faaf728ae07110fae4aa3cbd917135fc902f9ddfd0c915691f44`.
+- CI rustc identity: `rustc 1.98.1 (48a229cea 2026-09-01)`,
+  host `x86_64-unknown-linux-gnu`.
+- Only the unmatched-open-delimiter probe produced rustc stderr; its delimiter rejection matched
+  the committed `agree_reject` expectation and remains token-tree evidence, not a raw lexer claim.
